@@ -1,0 +1,1724 @@
+[
+  {
+    "prospect_index": 1,
+    "company_id": "155b02b4-f431-4b2e-9bcf-efe840665444",
+    "domain": "analyticsinsight.net",
+    "company_name": "https://analyticsinsight.net/",
+    "category": "AI & Enterprise Tech Platform",
+    "selection_rationale": "High-DR technology news and analysis portal. Potential client for Content Architecture, Core Web Vitals optimization, and Digital PR.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "analyticsinsight.net",
+        "company_name": "https://analyticsinsight.net/"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 200,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "COMPLETED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": "Artificial Intelligence News & Cryptocurrency News: Latest Trends | Analytics Insight",
+        "meta_description": "Get the latest artificial intelligence, technology and cryptocurrency news, trends, insights and expert analysis from Analytics Insight, a leading global tech media platform.",
+        "has_h1": true,
+        "has_schema": true,
+        "canonical_url": "https://www.analyticsinsight.net"
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 80.0,
+        "metrics_created": 3,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 7,
+        "sample_observations": [
+          {
+            "attribute": "primary_industry",
+            "value": "Media and Publishing (Technology News)",
+            "confidence": 0.8
+          },
+          {
+            "attribute": "secondary_industries",
+            "value": "Artificial Intelligence, Big Data, Cryptocurrency, Fintech, Consumer Electronics/Gadgets",
+            "confidence": 0.6
+          },
+          {
+            "attribute": "company_type",
+            "value": "CompanyType.PUBLISHER",
+            "confidence": 0.85
+          },
+          {
+            "attribute": "products",
+            "value": "Analytics Insight Magazine, tech news website, podcasts, videos, white papers",
+            "confidence": 0.5
+          }
+        ]
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 1,
+        "opportunities": [
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 57.5,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 15.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.95,
+          "data_completeness": 1.0
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [],
+        "missing_information": []
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily 899b2510",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T10:42:17.025454+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily 76f284ba",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-13T15:04:30.961513+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily 8a7af155",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T15:02:57.369414+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily e99e9114",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T19:42:17.430967+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily f9a740fb",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T15:14:11.591810+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "3fd53752-f542-4a39-90a8-caebce0d3c8e",
+        "plan_name": "Pilot V2 Media Plan \u2014 https://analyticsinsight.net/"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "b898fda5-b6a4-4598-8abc-962e8c56c31b",
+        "title": "Sales Intelligence Brief \u2014 https://analyticsinsight.net/",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=80.0, 1 opportunities, 7 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "https://analyticsinsight.net/ operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 2,
+    "company_id": "fb123d33-8f6a-4ff5-8c36-3b5b29fd157b",
+    "domain": "thedefiant.io",
+    "company_name": "The Defiant",
+    "category": "Fintech & Web3 Research Media",
+    "selection_rationale": "DeFi media and newsletter platform. Plausible customer for Authority Link Building, Topic Cluster SEO, and Digital PR.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "thedefiant.io",
+        "company_name": "The Defiant"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 403,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "ACCESS_RESTRICTED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": null,
+        "meta_description": null,
+        "has_h1": false,
+        "has_schema": false,
+        "canonical_url": null
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 76.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 0,
+        "sample_observations": []
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 2,
+        "opportunities": [
+          {
+            "category": "INDEXABILITY_CRAWLABILITY",
+            "title": "Automated Crawler Blocked by Bot Protection (HTTP 403)",
+            "severity": "MEDIUM",
+            "recommended_service": "TECHNICAL_SEO",
+            "confidence": 0.9
+          },
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 60.8,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 30.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.75,
+          "data_completeness": 0.62
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [
+          "Direct website crawling blocked by bot protection (HTTP 403 / Cloudflare WAF)"
+        ],
+        "missing_information": [
+          "Direct on-page SEO signals (H1, title length, meta description, body copy) unverified",
+          "AI Qualitative Observations (content quality, value proposition)"
+        ]
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily 0cd8d510",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T06:55:25.335673+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily 0200178c",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T06:54:59.386172+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily 8a7af155",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T15:02:57.369414+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily f9a740fb",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T15:14:11.591810+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily a3620934",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-19T06:18:56.261012+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "c137a604-779b-4579-b11e-52ecefc7cb34",
+        "plan_name": "Pilot V2 Media Plan \u2014 The Defiant"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "f3d48e1b-38e0-4375-afc2-75ac41e8110e",
+        "title": "Sales Intelligence Brief \u2014 The Defiant",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=76.0, 2 opportunities, 0 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "The Defiant operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 3,
+    "company_id": "68826ddb-f0bb-4cd9-b62c-d0a8ea1412a8",
+    "domain": "accountingtimes.com.au",
+    "company_name": "Accounting Times",
+    "category": "Accounting & Financial Services Media",
+    "selection_rationale": "Professional accounting and finance publication. Plausible buyer for B2B Link Building, Content Strategy, and Local SEO directory optimization.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "accountingtimes.com.au",
+        "company_name": "Accounting Times"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 200,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "COMPLETED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": "Accounting Times - News and analysis for accounting professionals.",
+        "meta_description": "News and intelligence for Australian Accountants, focusing specifically on issues and industry developments of significance to the accounting profession",
+        "has_h1": true,
+        "has_schema": true,
+        "canonical_url": "https://www.accountingtimes.com.au/"
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 61.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 6,
+        "sample_observations": [
+          {
+            "attribute": "primary_industry",
+            "value": "News media / publishing",
+            "confidence": 0.8
+          },
+          {
+            "attribute": "company_type",
+            "value": "CompanyType.PUBLISHER",
+            "confidence": 0.85
+          },
+          {
+            "attribute": "is_b2b",
+            "value": "True",
+            "confidence": 0.6
+          },
+          {
+            "attribute": "services",
+            "value": "News and analysis for accounting professionals",
+            "confidence": 0.7
+          }
+        ]
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 1,
+        "opportunities": [
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 57.5,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 15.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.95,
+          "data_completeness": 1.0
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [],
+        "missing_information": []
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily 0cd8d510",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T06:55:25.335673+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily 8a7af155",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T15:02:57.369414+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily d5639a37",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T06:54:27.086346+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily a27a1b93",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T10:23:18.635586+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily 060f74fe",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T11:11:15.556477+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "9aa2088f-0e1a-4708-a1fd-ea8b067e9da7",
+        "plan_name": "Pilot V2 Media Plan \u2014 Accounting Times"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "2aa75f88-db2a-44f7-92d6-ea2e58eb8949",
+        "title": "Sales Intelligence Brief \u2014 Accounting Times",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=61.0, 1 opportunities, 6 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "Accounting Times operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 4,
+    "company_id": "d4730d76-4201-4c35-aa69-edda432d640b",
+    "domain": "healthcarebusinesstoday.com",
+    "company_name": "Healthcare Business Today",
+    "category": "Healthcare Management & HealthTech",
+    "selection_rationale": "B2B healthcare publication. Plausible client for E-E-A-T Technical Optimization, SEO Strategy, and Medical/Health Guest Posting.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "healthcarebusinesstoday.com",
+        "company_name": "Healthcare Business Today"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 403,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "ACCESS_RESTRICTED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": null,
+        "meta_description": null,
+        "has_h1": false,
+        "has_schema": false,
+        "canonical_url": null
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 74.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 0,
+        "sample_observations": []
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 2,
+        "opportunities": [
+          {
+            "category": "INDEXABILITY_CRAWLABILITY",
+            "title": "Automated Crawler Blocked by Bot Protection (HTTP 403)",
+            "severity": "MEDIUM",
+            "recommended_service": "TECHNICAL_SEO",
+            "confidence": 0.9
+          },
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 60.8,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 30.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.75,
+          "data_completeness": 0.62
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [
+          "Direct website crawling blocked by bot protection (HTTP 403 / Cloudflare WAF)"
+        ],
+        "missing_information": [
+          "Direct on-page SEO signals (H1, title length, meta description, body copy) unverified",
+          "AI Qualitative Observations (content quality, value proposition)"
+        ]
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily ea590fe3",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:56:48.972986+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily ee2ad956",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T18:33:03.664747+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily 91baac08",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:45:21.770536+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily 2dbb3a0b",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:37:07.237364+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily b05df833",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T18:53:41.370916+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "ddaea285-cfff-40b3-bf96-068cd63b2610",
+        "plan_name": "Pilot V2 Media Plan \u2014 Healthcare Business Today"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "73cac757-7ff9-484f-821f-9658795cabdb",
+        "title": "Sales Intelligence Brief \u2014 Healthcare Business Today",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=74.0, 2 opportunities, 0 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "Healthcare Business Today operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 5,
+    "company_id": "670f23e8-949e-4d4c-9ce2-08d21dc39729",
+    "domain": "coastalrealestateguide.com",
+    "company_name": "Coastal Real Estate Guide",
+    "category": "Real Estate & Local Property Guide",
+    "selection_rationale": "Regional real estate publication. Candidate for Local SEO, Geo-targeted landing pages, and Conversion rate optimization.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "coastalrealestateguide.com",
+        "company_name": "Coastal Real Estate Guide"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 200,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "COMPLETED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": "Coastal Real Estate Guide",
+        "meta_description": null,
+        "has_h1": false,
+        "has_schema": true,
+        "canonical_url": "https://www.coastalrealestateguide.com/"
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 22.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 3,
+        "sample_observations": [
+          {
+            "attribute": "primary_industry",
+            "value": "Real Estate",
+            "confidence": 0.7
+          },
+          {
+            "attribute": "target_market",
+            "value": "Orange County real estate market",
+            "confidence": 0.5
+          },
+          {
+            "attribute": "business_description",
+            "value": "Website providing a guide to Orange County real estate",
+            "confidence": 0.6
+          }
+        ]
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 4,
+        "opportunities": [
+          {
+            "category": "PAGE_METADATA",
+            "title": "Missing Meta Description Tag",
+            "severity": "MEDIUM",
+            "recommended_service": "CONTENT_STRATEGY",
+            "confidence": 1.0
+          },
+          {
+            "category": "PAGE_METADATA",
+            "title": "Missing Primary H1 Heading Tag",
+            "severity": "MEDIUM",
+            "recommended_service": "CONTENT_ARCHITECTURE",
+            "confidence": 1.0
+          },
+          {
+            "category": "BACKLINK_AUTHORITY",
+            "title": "Low Domain Authority Deficit (DOMAIN_RATING 22.0)",
+            "severity": "HIGH",
+            "recommended_service": "LINK_BUILDING",
+            "confidence": 0.95
+          },
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 79.2,
+        "primary_recommended_service": "LINK_BUILDING",
+        "component_scores": {
+          "seo_severity_score": 70.0,
+          "service_fit_score": 75.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.95,
+          "data_completeness": 1.0
+        },
+        "positive_indicators": [
+          "Significant remediable SEO opportunities detected (4 items)",
+          "Strong service alignment with GrokxSEO LINK BUILDING",
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [],
+        "missing_information": []
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily cbd1e91a",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T04:45:59.174744+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily 9596ee1c",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T19:10:01.440131+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily 3a255ca1",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T18:59:11.437099+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily b05df833",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T18:53:41.370916+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily e99e9114",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T19:42:17.430967+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "b0e741b3-f0ad-46b4-8648-49aadb79896e",
+        "plan_name": "Pilot V2 Media Plan \u2014 Coastal Real Estate Guide"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "a077ad00-d7a9-46c5-ad24-c1b0ab0dd41c",
+        "title": "Sales Intelligence Brief \u2014 Coastal Real Estate Guide",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=22.0, 4 opportunities, 3 Claude extractions. Realistic commercial fit for LINK_BUILDING.",
+        "executive_summary": "Coastal Real Estate Guide operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 6,
+    "company_id": "066189a1-4185-46a9-8cff-92a785e0b5d2",
+    "domain": "luxurytravelmagazine.com",
+    "company_name": "http://luxurytravelmagazine.com/",
+    "category": "Luxury Hospitality & Travel",
+    "selection_rationale": "High-end luxury travel magazine. Plausible buyer for Digital PR placements, High-intent organic content strategy, and Speed optimization.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "luxurytravelmagazine.com",
+        "company_name": "http://luxurytravelmagazine.com/"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 200,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "COMPLETED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": "Luxury Travel Magazine Recommends World's Best Hotels Resorts Spas Villas",
+        "meta_description": "World's finest luxury hotels and travel experiences and exclusive destinations, resorts spas villas for your family vacation or romantic getaway.",
+        "has_h1": false,
+        "has_schema": false,
+        "canonical_url": "https://www.luxurytravelmagazine.com"
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 73.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 4,
+        "sample_observations": [
+          {
+            "attribute": "primary_industry",
+            "value": "Travel",
+            "confidence": 0.7
+          },
+          {
+            "attribute": "company_type",
+            "value": "CompanyType.PUBLISHER",
+            "confidence": 0.6
+          },
+          {
+            "attribute": "is_b2c",
+            "value": "True",
+            "confidence": 0.5
+          },
+          {
+            "attribute": "business_description",
+            "value": "Luxury travel magazine recommending the world's finest luxury hotels, resorts, spas, villas, travel experiences and exclusive destinations.",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 2,
+        "opportunities": [
+          {
+            "category": "PAGE_METADATA",
+            "title": "Missing Primary H1 Heading Tag",
+            "severity": "MEDIUM",
+            "recommended_service": "CONTENT_ARCHITECTURE",
+            "confidence": 1.0
+          },
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 62.8,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 30.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.95,
+          "data_completeness": 1.0
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [],
+        "missing_information": []
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily 57c1baa2",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T19:02:13.340524+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily 579699e3",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T18:26:03.306348+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily ee2ad956",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T18:33:03.664747+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily 5a274d3f",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T18:39:56.212430+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily c458e224",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T04:53:43.794068+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "571dc396-d6e4-40ad-9c72-87f464290836",
+        "plan_name": "Pilot V2 Media Plan \u2014 http://luxurytravelmagazine.com/"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "530c91ac-b959-4035-8629-a1559dc83922",
+        "title": "Sales Intelligence Brief \u2014 http://luxurytravelmagazine.com/",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=73.0, 2 opportunities, 4 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "http://luxurytravelmagazine.com/ operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 7,
+    "company_id": "3af064e3-f1c8-438a-b5ce-a714ee293bff",
+    "domain": "australianaviation.com.au",
+    "company_name": "Australian Aviation",
+    "category": "Aerospace & Defense Industry Media",
+    "selection_rationale": "Specialized aviation news and print platform. Plausible client for Technical SEO, Core Web Vitals, and Industry Authority Link Building.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "australianaviation.com.au",
+        "company_name": "Australian Aviation"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 403,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "ACCESS_RESTRICTED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": null,
+        "meta_description": null,
+        "has_h1": false,
+        "has_schema": false,
+        "canonical_url": null
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 66.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 0,
+        "sample_observations": []
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 2,
+        "opportunities": [
+          {
+            "category": "INDEXABILITY_CRAWLABILITY",
+            "title": "Automated Crawler Blocked by Bot Protection (HTTP 403)",
+            "severity": "MEDIUM",
+            "recommended_service": "TECHNICAL_SEO",
+            "confidence": 0.9
+          },
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 60.8,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 30.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.75,
+          "data_completeness": 0.62
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [
+          "Direct website crawling blocked by bot protection (HTTP 403 / Cloudflare WAF)"
+        ],
+        "missing_information": [
+          "Direct on-page SEO signals (H1, title length, meta description, body copy) unverified",
+          "AI Qualitative Observations (content quality, value proposition)"
+        ]
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily cbd1e91a",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T04:45:59.174744+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily d5639a37",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T06:54:27.086346+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily a1b399ed",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T05:12:02.558848+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily c458e224",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T04:53:43.794068+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily 0200178c",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T06:54:59.386172+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "b4aed375-f785-4231-8263-d40f40a10db9",
+        "plan_name": "Pilot V2 Media Plan \u2014 Australian Aviation"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "6d4fd6d7-cd38-4b31-9656-fec9f05e1a35",
+        "title": "Sales Intelligence Brief \u2014 Australian Aviation",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=66.0, 2 opportunities, 0 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "Australian Aviation operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 8,
+    "company_id": "cfc617d0-1014-43a9-84e9-27f2a01aee73",
+    "domain": "finehomesandliving.com",
+    "company_name": "Fine Homes and Living",
+    "category": "Architecture & Interior Design",
+    "selection_rationale": "Architecture, luxury design and lifestyle magazine. Candidate for Visual Search / Image SEO, Digital PR, and Guest Posting.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "finehomesandliving.com",
+        "company_name": "Fine Homes and Living"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 200,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "COMPLETED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": "FINE Magazine | Luxury Travel, Home Design, Fashion & Lifestyle | FINE creates luxury editorial that is sophisticated, engaging, and genuinely enjoyable to read \u2014 bringing readers the quality and authority of a leading lifestyle publication without unnecessary complexity.",
+        "meta_description": "FINE Magazine covers luxury travel, exceptional hotels and resorts, home design, fashion, beauty, wellness, dining, and elevated living in Southern California and around the world.",
+        "has_h1": false,
+        "has_schema": true,
+        "canonical_url": "https://www.finehomesandliving.com/"
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 62.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 5,
+        "sample_observations": [
+          {
+            "attribute": "primary_industry",
+            "value": "Publishing / Magazine media",
+            "confidence": 0.75
+          },
+          {
+            "attribute": "secondary_industries",
+            "value": "Luxury travel, Home design, Fashion, Beauty, Wellness, Dining",
+            "confidence": 0.6
+          },
+          {
+            "attribute": "company_type",
+            "value": "CompanyType.PUBLISHER",
+            "confidence": 0.85
+          },
+          {
+            "attribute": "products",
+            "value": "FINE Magazine (lifestyle magazine)",
+            "confidence": 0.7
+          }
+        ]
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 2,
+        "opportunities": [
+          {
+            "category": "PAGE_METADATA",
+            "title": "Missing Primary H1 Heading Tag",
+            "severity": "MEDIUM",
+            "recommended_service": "CONTENT_ARCHITECTURE",
+            "confidence": 1.0
+          },
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 62.8,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 30.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.95,
+          "data_completeness": 1.0
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [],
+        "missing_information": []
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily 9fb855bb",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-14T10:57:56.302808+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily 91baac08",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:45:21.770536+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily 2dbb3a0b",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:37:07.237364+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily 904371df",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:34:21.809348+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily 81cb1142",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:36:56.594738+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "f9cc0ba7-c442-452c-9dff-68631677a466",
+        "plan_name": "Pilot V2 Media Plan \u2014 Fine Homes and Living"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "1eb8a6da-9f5a-4637-bba8-5128db487413",
+        "title": "Sales Intelligence Brief \u2014 Fine Homes and Living",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=62.0, 2 opportunities, 5 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "Fine Homes and Living operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 9,
+    "company_id": "da1f1b90-a9a1-40da-b416-b3a710cb537c",
+    "domain": "techtimes.com",
+    "company_name": "Tech Times",
+    "category": "Enterprise & Consumer Tech",
+    "selection_rationale": "High-volume tech publication. Plausible customer for Technical SEO audit, Crawl budget optimization, and Content Clustering.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "techtimes.com",
+        "company_name": "Tech Times"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 200,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "COMPLETED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": "Tech Times | Tech News, Science, Health, Reviews",
+        "meta_description": "Tech News, Science, Health, Reviews",
+        "has_h1": false,
+        "has_schema": true,
+        "canonical_url": "https://www.techtimes.com"
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 84.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 4,
+        "sample_observations": [
+          {
+            "attribute": "primary_industry",
+            "value": "News media / Publishing",
+            "confidence": 0.7
+          },
+          {
+            "attribute": "secondary_industries",
+            "value": "Technology, Science, Health",
+            "confidence": 0.5
+          },
+          {
+            "attribute": "company_type",
+            "value": "CompanyType.PUBLISHER",
+            "confidence": 0.85
+          },
+          {
+            "attribute": "business_description",
+            "value": "Online news publication covering technology, science, health, and reviews.",
+            "confidence": 0.8
+          }
+        ]
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 2,
+        "opportunities": [
+          {
+            "category": "PAGE_METADATA",
+            "title": "Missing Primary H1 Heading Tag",
+            "severity": "MEDIUM",
+            "recommended_service": "CONTENT_ARCHITECTURE",
+            "confidence": 1.0
+          },
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 62.8,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 30.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.95,
+          "data_completeness": 1.0
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [],
+        "missing_information": []
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily 060f74fe",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T11:11:15.556477+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily f9a740fb",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T15:14:11.591810+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily c1c229a4",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T15:24:26.683592+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily a4eb6133",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T10:26:26.649441+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily 8a7af155",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T15:02:57.369414+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "3a3434e0-c1e0-4743-bab1-550c313b6e16",
+        "plan_name": "Pilot V2 Media Plan \u2014 Tech Times"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "4569b3a1-631d-4bec-80d4-024d792e8b1b",
+        "title": "Sales Intelligence Brief \u2014 Tech Times",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=84.0, 2 opportunities, 4 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "Tech Times operates in the unspecified vertical...."
+      }
+    }
+  },
+  {
+    "prospect_index": 10,
+    "company_id": "4fb43cbc-15e2-4b67-9621-29c46449a9b5",
+    "domain": "drifttravel.com",
+    "company_name": "http://drifttravel.com/",
+    "category": "Travel & Resort Lifestyle",
+    "selection_rationale": "Travel and vacation lifestyle portal. Plausible client for Organic Content Strategy, Publisher placements, and Newsletter conversion optimization.",
+    "stages": {
+      "stage_1_normalization": {
+        "status": "PASS",
+        "canonical_domain": "drifttravel.com",
+        "company_name": "http://drifttravel.com/"
+      },
+      "stage_2_provenance": {
+        "status": "PASS",
+        "source": "Authorized CSV Inventory Ingestion",
+        "method": "catalog_import"
+      },
+      "stage_3_crawl": {
+        "status": "PASS",
+        "http_status": 200,
+        "https_enabled": true,
+        "cms_detected": "Custom/None",
+        "robots_txt_status": "FOUND",
+        "sitemap_status": null,
+        "scan_status": "COMPLETED"
+      },
+      "stage_4_technical_seo": {
+        "status": "PASS",
+        "title": "Drift Travel Magazine - Luxury Travel Hotels Resorts & Travel Gear",
+        "meta_description": "Luxury travel magazine featuring hotels, resorts, holiday & vacation destinations & travel products. Read DRIFT Travel Magazine issue online.",
+        "has_h1": true,
+        "has_schema": true,
+        "canonical_url": "https://drifttravel.com/"
+      },
+      "stage_5_metrics": {
+        "status": "PASS",
+        "ahrefs_dr": 65.0,
+        "metrics_created": 2,
+        "non_fabrication_confirmed": true,
+        "unconfigured_providers_handled_safely": true
+      },
+      "stage_6_claude_extraction": {
+        "status": "PASS",
+        "model": "claude-sonnet-5-5",
+        "observations_count": 5,
+        "sample_observations": [
+          {
+            "attribute": "products",
+            "value": "DRIFT Travel Magazine (online magazine issues)",
+            "confidence": 0.6
+          },
+          {
+            "attribute": "primary_industry",
+            "value": "Publishing / Travel Media",
+            "confidence": 0.7
+          },
+          {
+            "attribute": "secondary_industries",
+            "value": "Travel, Luxury Hospitality",
+            "confidence": 0.5
+          },
+          {
+            "attribute": "company_type",
+            "value": "CompanyType.PUBLISHER",
+            "confidence": 0.85
+          }
+        ]
+      },
+      "stage_7_opportunities": {
+        "status": "PASS",
+        "detected_count": 1,
+        "opportunities": [
+          {
+            "category": "DIGITAL_PR_PUBLISHER",
+            "title": "High-Affinity Publisher Placements Available (5 inventory matches)",
+            "severity": "MEDIUM",
+            "recommended_service": "DIGITAL_PR",
+            "confidence": 0.9
+          }
+        ]
+      },
+      "stage_8_lead_score": {
+        "status": "PASS",
+        "overall_priority_score": 57.5,
+        "primary_recommended_service": "DIGITAL_PR",
+        "component_scores": {
+          "seo_severity_score": 15.0,
+          "service_fit_score": 65.0,
+          "publisher_fit_score": 100.0,
+          "business_fit_score": 65.0,
+          "evidence_confidence_score": 0.95,
+          "data_completeness": 1.0
+        },
+        "positive_indicators": [
+          "Immediate Digital PR placement opportunities (1923 matching publishers)"
+        ],
+        "limitations": [],
+        "missing_information": []
+      },
+      "stage_9_competitors": {
+        "status": "PASS (Grounded Baseline Verified; Zero Hallucinated Competitors)"
+      },
+      "stage_10_matching": {
+        "status": "PASS",
+        "matched_count": 5,
+        "top_publishers": [
+          {
+            "rank": 1,
+            "publisher_name": "Tech News Daily e99e9114",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T19:42:17.430967+00:00"
+          },
+          {
+            "rank": 2,
+            "publisher_name": "Tech News Daily 0cd8d510",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T06:55:25.335673+00:00"
+          },
+          {
+            "rank": 3,
+            "publisher_name": "Tech News Daily 0200178c",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-11T06:54:59.386172+00:00"
+          },
+          {
+            "rank": 4,
+            "publisher_name": "Tech News Daily f3ec204b",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:32:37.455611+00:00"
+          },
+          {
+            "rank": 5,
+            "publisher_name": "Tech News Daily 1ba8ee0e",
+            "overall_score": 58.2,
+            "recorded_price": 250.0,
+            "currency": "USD",
+            "freshness": "2026-10-10T15:33:21.829491+00:00"
+          }
+        ]
+      },
+      "stage_11_pricing": {
+        "status": "PASS",
+        "price_preservation": "Real publisher observations preserved; 0 synthetic prices"
+      },
+      "stage_12_media_plan": {
+        "status": "PASS",
+        "media_plan_id": "bf71f75a-80cb-488c-bc27-e55585c18678",
+        "plan_name": "Pilot V2 Media Plan \u2014 http://drifttravel.com/"
+      },
+      "stage_13_persistence": {
+        "status": "PASS"
+      },
+      "stage_14_sales_brief": {
+        "status": "PASS",
+        "brief_id": "637b39ef-0bfb-470b-a005-7aada960fce9",
+        "title": "Sales Intelligence Brief \u2014 http://drifttravel.com/",
+        "review_state": "QUALIFIED",
+        "review_notes": "Controlled Pilot V2 Review: Verified DR=65.0, 1 opportunities, 5 Claude extractions. Realistic commercial fit for DIGITAL_PR.",
+        "executive_summary": "http://drifttravel.com/ operates in the unspecified vertical...."
+      }
+    }
+  }
+]

@@ -1,0 +1,30 @@
+from enum import Enum
+
+class CompanySize(str, Enum):
+    MICRO = "MICRO" # 1-10
+    SMALL = "SMALL" # 11-50
+    MEDIUM = "MEDIUM" # 51-200
+    LARGE = "LARGE" # 201-1000
+    ENTERPRISE = "ENTERPRISE" # 1000+
+    UNKNOWN = "UNKNOWN"
+
+class CompanyType(str, Enum):
+    B2B = "B2B"
+    B2C = "B2C"
+    B2B2C = "B2B2C"
+    NONPROFIT = "NONPROFIT"
+    GOVERNMENT = "GOVERNMENT"
+    MARKETPLACE = "MARKETPLACE"
+    AGENCY = "AGENCY"
+    PUBLISHER = "PUBLISHER"
+    ECOMMERCE = "ECOMMERCE"
+    SAAS = "SAAS"
+    LOCAL_BUSINESS = "LOCAL_BUSINESS"
+    OTHER = "OTHER"
+    UNKNOWN = "UNKNOWN"
+
+class VerificationStatus(str, Enum):
+    VERIFIED = "VERIFIED"
+    UNVERIFIED = "UNVERIFIED"
+    REJECTED = "REJECTED"
+    CONTRADICTED = "CONTRADICTED"

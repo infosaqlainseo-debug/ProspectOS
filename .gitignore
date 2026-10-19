@@ -1,0 +1,48 @@
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+*.env
+backend/.env
+frontend/.env
+frontend/.env.*
+
+# Python & Virtual Environments
+.venv/
+backend/.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Databases & Backups
+*.db
+*.sqlite3
+*.dump
+*.sha256
+backups/*.dump
+backups/*.sha256
+backend/backups/*.dump
+backend/backups/*.sha256
+
+# Process IDs & Sockets
+*.pid
+backend/arq_worker.pid
+
+# Logs
+*.log
+backend/arq.log
+
+# Node & Next.js
+node_modules/
+frontend/node_modules/
+.next/
+frontend/.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# OS artifacts
+.DS_Store
+Thumbs.db

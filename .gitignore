@@ -25,6 +25,7 @@ backups/*.sha256
 backend/backups/*.dump
 backend/backups/*.sha256
 backups/ssl/
+.cloudflared/
 *.pem
 *.key
 *.crt

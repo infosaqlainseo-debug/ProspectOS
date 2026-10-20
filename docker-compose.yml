@@ -2,6 +2,7 @@ services:
   db:
     image: postgres:15
     container_name: prospectos_db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
@@ -15,10 +16,13 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - prospectos_network
 
   redis:
     image: redis:7
     container_name: prospectos_redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
     healthcheck:
@@ -26,12 +30,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - prospectos_network
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: prospectos_backend
+    restart: unless-stopped
     ports:
       - "8000:8000"
     env_file:
@@ -40,42 +47,75 @@ services:
       - DATABASE_URL=postgresql+asyncpg://user:password@db:5432/prospectos
       - REDIS_URL=redis://redis:6379/0
       - EMAIL_PROVIDER=none
+      - BACKUP_DIR=/app/backups
+    volumes:
+      - ./backups:/app/backups
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
     command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    networks:
+      - prospectos_network
 
   worker:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: prospectos_worker
+    restart: unless-stopped
     env_file:
       - ./backend/.env
     environment:
       - DATABASE_URL=postgresql+asyncpg://user:password@db:5432/prospectos
       - REDIS_URL=redis://redis:6379/0
       - EMAIL_PROVIDER=none
+      - BACKUP_DIR=/app/backups
+    volumes:
+      - ./backups:/app/backups
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+      backend:
+        condition: service_healthy
     command: ["arq", "app.workers.worker.WorkerSettings"]
+    networks:
+      - prospectos_network
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: prospectos_frontend
+    restart: unless-stopped
     ports:
       - "3001:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - prospectos_network
 
 volumes:
   postgres_data:
+
+networks:
+  prospectos_network:
+    driver: bridge

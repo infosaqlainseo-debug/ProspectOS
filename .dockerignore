@@ -1,0 +1,28 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies & Environments
+**/node_modules/
+**/.venv/
+**/__pycache__/
+*.pyc
+
+# Next.js & Frontend builds
+**/.next/
+frontend/out/
+
+# Local Environment Secrets
+**/.env
+**/.env.local
+**/.env.*.local
+!.env.example
+
+# Backups
+backups/*.dump
+backups/*.dump.sha256
+
+# Temporary & Logs
+*.log
+.DS_Store
+.vscode/

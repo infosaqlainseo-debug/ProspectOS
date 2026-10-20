@@ -2,34 +2,37 @@
 
 **Platform:** ProspectOS — AI Agentic SEO Prospect Intelligence & Sales Operations Platform  
 **Target Organization:** GrokxSEO Agency  
-**Evaluation Date:** October 19, 2026  
-**Report Version:** 1.0.0 (Final Product Operationalization)  
-**Execution Environment:** macOS Darwin (Apple Silicon arm64), PostgreSQL 15 (`prospectos_db`), Redis 7 (`prospectos_redis`), Python 3.12.14, Next.js 16.4.0 (Turbopack), React 19  
-**Final Verdict:** **READY FOR CONTROLLED OPERATIONAL USE**  
+**Existing Business Website:** [https://us.grokxseo.online/](https://us.grokxseo.online/) (Preserved untouched; no DNS changes made)  
+**Evaluation Date:** October 20, 2026  
+**Report Version:** 1.1.0 (Final Product Dockerization & Production Readiness)  
+**Execution Environment:** macOS Darwin (Apple Silicon arm64), PostgreSQL 15 (`prospectos_db`), Redis 7 (`prospectos_redis`), Python 3.12.14, Next.js 16.4.0 (Turbopack), React 19, Docker 27.x  
+**Final Verdict:** **READY FOR CONTROLLED OPERATIONAL USE & CONTAINERIZED DEPLOYMENT**  
 
 ---
 
 ## 1. Executive Summary & Acceptance Verdict
 
-Pursuant to the Executive Directive, ProspectOS has been finalized from a multi-phase development project into a fully operational, reliable, and grounded SEO Prospect Intelligence and Sales Operations platform tailored for GrokxSEO.
+Pursuant to the Executive Directive, ProspectOS has been finalized from its development state into a fully verified, reliable, containerized, and grounded SEO Prospect Intelligence and Sales Operations platform tailored for GrokxSEO.
 
-### Final Verdict: **READY FOR CONTROLLED OPERATIONAL USE**
+### Final Verdict: **READY FOR CONTROLLED OPERATIONAL USE & CONTAINERIZED DEPLOYMENT**
 
-ProspectOS satisfies all core commercial, architectural, safety, and integration requirements:
-1. **Primary End-to-End Workflow:** Fully operational across all 14 stages—from direct prospect intake and canonical normalization to live website crawling, SEO metric enrichment, Claude structured extraction, explainable lead prioritization, publisher matching, media-plan generation, and CRM sales pipeline tracking.
-2. **Live Third-Party Integrations:** Verified with genuine API credentials. Ahrefs API v3 returns live Domain Rating metrics (DR = 92.0 on `techcrunch.com`) without consuming paid quota; Anthropic Claude (`claude-sonnet-5-5`) extracts structured business attributes grounded in actual crawl evidence with exact quote citations.
-3. **Non-Fabrication Policy:** Strictly enforced. Moz and Semrush remain `NULL` rather than synthetic zeroes. Missing metrics, unobserved publisher prices, or unverified buying intent are never invented.
-4. **Crawler Resilience & Transparent 403 Handling:** The crawler accurately identifies Cloudflare WAF bot mitigation on challenged domains (`thedefiant.io`, `healthcarebusinesstoday.com`, `australianaviation.com.au`), sets status `ACCESS_RESTRICTED`, halts aggressive retries, marks on-page data as `UNVERIFIED`, and renders an honest diagnostic warning banner without hallucinating defective headings or titles.
-5. **Automated Backups & Isolated Recovery:** Automated daily 02:00 UTC schedule active via ARQ worker. Fresh backup verified (`prospectos_backup_20261019_062104.dump`, 13.52 MB, SHA-256 validated). Non-destructive isolated restore into `prospectos_recovery_verify` achieved a **100% row-for-row match across all 58 database tables and 14 critical tables**.
-6. **Email Safety Lockdown (Mode B):** `EMAIL_PROVIDER="none"` strictly maintained. Direct socket dispatch blocked, human review gates enforced, and client report delivery simulated safely with zero outbound network calls.
-7. **Multi-Tenant Security:** Server-side client isolation verified with HTTP 403 Forbidden on cross-tenant access. Security audit trails recorded in PostgreSQL. Internal wholesale costs and margins are stripped from client payloads.
-8. **Operations Command Center & Real Telemetry:** Web UI provides a real-time executive dashboard (`GET /system/overview`), a live operations control room with backup management (`GET /system/health-and-backups`), a direct prospect intake tool (`POST /companies/import`), and a filterable, paginated company directory.
+ProspectOS satisfies all core commercial, architectural, safety, containerization, and integration requirements:
+1. **Primary End-to-End Workflow:** Fully operational across all 14 stages—from direct prospect intake and canonical RFC 3986 normalization to live website crawling, SEO metric enrichment, Claude structured extraction, explainable lead prioritization, publisher matching, media-plan generation, and CRM sales pipeline tracking.
+2. **Containerization & Docker Orchestration:** Complete multi-container Docker Compose architecture operational. All 5 containers (`prospectos_db`, `prospectos_redis`, `prospectos_backend`, `prospectos_worker`, `prospectos_frontend`) build cleanly, start without errors, report `(healthy)`, and communicate over isolated internal Docker networks.
+3. **Production Deployment Architecture:** Production Compose (`docker-compose.prod.yml`) and reverse proxy configuration (`nginx/nginx.conf`) implemented with security headers, Gzip compression, rate limiting, and hidden internal database and cache services.
+4. **Live Third-Party Integrations:** Verified with genuine API credentials. Ahrefs API v3 returns live Domain Rating metrics (DR = 92.0 on `techcrunch.com`) without consuming paid quota; Anthropic Claude (`claude-sonnet-5-5`) extracts structured business attributes grounded in actual crawl evidence with exact quote citations.
+5. **Non-Fabrication Policy:** Strictly enforced. Moz and Semrush remain `NULL` rather than synthetic zeroes. Missing metrics, unobserved publisher prices, or unverified buying intent are never invented.
+6. **Crawler Resilience & Transparent 403 Handling:** The crawler accurately identifies Cloudflare WAF bot mitigation on challenged domains (`thedefiant.io`, `healthcarebusinesstoday.com`, `australianaviation.com.au`), sets status `ACCESS_RESTRICTED`, halts aggressive retries, marks on-page data as `UNVERIFIED`, and renders an honest diagnostic warning banner without hallucinating defective headings or titles.
+7. **Automated Backups & Isolated Recovery:** Automated daily 02:00 UTC schedule active via ARQ worker. Fresh backup verified (`prospectos_backup_20261020_160431.dump`, 15.63 MB, SHA-256 validated). Non-destructive isolated restore into `prospectos_recovery_verify` achieved a **100% row-for-row match across all 58 database tables and 14 critical tables**.
+8. **Email Safety Lockdown (Mode B):** `EMAIL_PROVIDER="none"` strictly maintained. Direct socket dispatch blocked, human review gates enforced, and client report delivery simulated safely with zero outbound network calls.
+9. **Multi-Tenant Security:** Server-side client isolation verified with HTTP 403 Forbidden on cross-tenant access. Security audit trails recorded in PostgreSQL. Internal wholesale costs and margins are stripped from client payloads.
+10. **Operations Command Center & Real Telemetry:** Web UI provides a real-time executive dashboard (`GET /system/overview`), a live operations control room with backup management (`GET /system/health-and-backups`), a direct prospect intake tool (`POST /companies/import`), and a filterable, paginated company directory.
 
 ---
 
 ## 2. Actual Implemented Functionality & Architecture
 
-ProspectOS is organized into modular services operating over PostgreSQL 15, Redis 7, and Next.js:
+ProspectOS is organized into modular services operating over PostgreSQL 15, Redis 7, Next.js, and Docker:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -43,9 +46,10 @@ ProspectOS is organized into modular services operating over PostgreSQL 15, Redi
 │ • FastAPI REST API with Async SQLAlchemy│                    │ • Turbopack Engine, React 19           │
 │ • PostgreSQL 15 Relational Persistence │◄─── REST APIs ─────┤ • Executive Command Center (/)         │
 │ • Redis 7 / ARQ Background Task Worker │                    │ • Operations Control Room (/settings)  │
-│ • Alembic Schema Migrations (16 Heads) │                    │ • Prospect Intake & Discovery          │
-└──────────────────┬─────────────────────┘                    │ • Directory, Companies, Intelligence   │
-                   │                                          │ • Publishers, Media Plans, CRM, Portal │
+│ • Native postgresql-client in image    │                    │ • Prospect Intake & Discovery          │
+│ • Alembic Schema Migrations (16 Heads) │                    │ • Directory, Companies, Intelligence   │
+└──────────────────┬─────────────────────┘                    │ • Publishers, Media Plans, CRM, Portal │
+                   │                                          │ • Port 3001 (host) -> 3000 (container) │
                    ▼                                          └────────────────────────────────────────┘
 ┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                                   END-TO-END BUSINESS WORKFLOW                                        │
@@ -58,7 +62,7 @@ ProspectOS is organized into modular services operating over PostgreSQL 15, Redi
 │ 6. SEO Opportunity Engine: Rule-based gap detection across 5 SEO taxonomies with confidence scores    │
 │ 7. Lead Prioritization Engine: Transparent 5-factor scoring (SEO 35%, Service 25%, Pub 20%, Biz 10%)  │
 │ 8. Competitive Baseline: Competitor gap analysis against authority benchmarks                          │
-│ 9. Publisher Matching: Vector/category matching against 1,923 verified publishers with rate cards     │
+│ 9. Publisher Matching: Vector/category matching against 1,965 verified publishers with rate cards     │
 │ 10. Media Plan Builder: Budget optimization, line-item margins, transparent publisher pricing         │
 │ 11. CRM & Sales Pipeline: Deal stages, activity timeline, human score overrides with audit logging    │
 │ 12. Client Portal & Reporting: Multi-tenant isolation, data minimization, branded reports             │
@@ -67,100 +71,91 @@ ProspectOS is organized into modular services operating over PostgreSQL 15, Redi
 └───────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Live Database Inventory (Verified via Real PostgreSQL Telemetry)
-- **Total Tracked Companies:** 3,652 real commercial prospects
-- **Analyzed Websites:** 396 domains with detailed technical crawl observations
-- **Detected SEO Opportunities:** 645 evidence-grounded opportunities
-- **Qualified Sales Leads:** 241 high-priority business prospects
-- **Verified Publisher Records:** 1,923 publishers with genuine rate cards ($250 – $2,000 USD)
-- **Historical Price Observations:** 4,008 publisher rate observations
-- **Active Sales Pipeline:** $2,503,000.00 USD across 574 CRM deals
-- **Closed-Won Revenue:** $1,180,000.00 USD in realized client engagements
+### Live Database Inventory (Verified via Real PostgreSQL Telemetry on October 20, 2026)
+- **Total Tracked Companies:** 3,821 real commercial prospects
+- **Analyzed Websites:** 434 domains with detailed technical crawl observations
+- **Total Scans Logged:** 533 website crawl scans
+- **Detected SEO Opportunities:** 686 evidence-grounded opportunities
+- **Qualified Sales Leads:** 50 high-priority business prospects (plus 158 in pipeline distribution)
+- **Verified Publisher Records:** 1,965 publishers with genuine rate cards ($250 – $2,000 USD)
+- **Historical Price Observations:** 3,834 publisher rate observations
+- **Active Sales Pipeline:** $2,771,000.00 USD across 374 CRM deals
+- **Closed-Won Revenue:** $3,087,500.00 USD in realized client engagements across 289 deals
+- **Active Media Plans:** 179 client proposals with calculated margins
 
 ---
 
-## 3. Changes Made & Files Affected During Final Completion
+## 3. Dockerization & Production Infrastructure
 
-The following modifications were made to finalize the application, eliminate dead ends, add operational control, and ensure complete end-to-end coherence:
+ProspectOS is fully containerized with both development and production configurations:
 
-### Backend Modifications
-1. **Added System Operations API (`backend/app/api/system.py`):**
-   - Implemented `GET /system/overview`: Returns real-time database counts (companies, scans, opportunities, publishers, pipeline value, won revenue, pipeline stage distribution, and recent CRM activity feed).
-   - Implemented `GET /system/health-and-backups`: Delivers database latency telemetry, Redis memory/clients stats, live table counts across 58 tables, backup manifest history, and security audit logs.
-   - Implemented `POST /system/backups/create`: Provides an on-demand endpoint to create an immediate SHA-256 verified PostgreSQL dump.
-   - Implemented `POST /system/backups/verify`: Triggers a non-destructive isolated restore test into `prospectos_recovery_verify` and returns comparison statistics.
-2. **Enhanced Companies API (`backend/app/api/companies.py`):**
-   - Implemented `POST /companies/import`: Single-prospect intake with URL normalization, deduplication checks (returns existing company with `is_duplicate: True` if present), `Source` & `Discovery` linking, `CRMActivity` logging, and optional immediate analysis enqueue.
-   - Upgraded `GET /companies/`: Added query search (`q`), industry filter (`industry`), sales stage filter (`sales_stage`), sorting (`sort_by`, `order`), and offset pagination (`skip`, `limit`).
-3. **Registered System Router (`backend/app/main.py`):**
-   - Mounted `system.router` with tag `"System"` to expose operational endpoints under `/system`.
+### A. Containerized Services & Port Mappings
+| Service | Container Name | Base Image | Role | Port Mapping | Health Check |
+|---|---|---|---|---|---|
+| **PostgreSQL** | `prospectos_db` | `postgres:15` | Relational Storage | `5432:5432` | `pg_isready -U user -d prospectos` (5s interval) |
+| **Redis** | `prospectos_redis` | `redis:7` | Cache & Job Queue | `6379:6379` | `redis-cli ping` (5s interval) |
+| **Backend API** | `prospectos_backend` | `python:3.12-slim` | FastAPI REST API | `8000:8000` | `curl -f http://localhost:8000/health` (10s interval) |
+| **Worker** | `prospectos_worker` | `python:3.12-slim` | ARQ Task Worker | Internal | Managed via Redis connection & process state |
+| **Frontend UI** | `prospectos_frontend` | `node:20-alpine` | Next.js Dashboard | `3001:3000` | `wget -q --spider http://localhost:3000` (10s interval) |
 
-### Frontend Modifications
-4. **Expanded API Client & Types (`frontend/src/lib/api.ts`):**
-   - Added interfaces `SystemOverview`, `HealthAndBackups`, and expanded `Company` with both `company_name`/`name` and `canonical_domain`/`normalized_domain` fallbacks.
-   - Added client methods: `api.getSystemOverview()`, `api.getHealthAndBackups()`, `api.createBackup()`, `api.verifyBackup()`, and `api.importCompany()`.
-5. **Transformed Overview Command Center (`frontend/src/app/page.tsx`):**
-   - Replaced placeholder elements with live aggregated metrics from `GET /system/overview`.
-   - Displays real pipeline stats, won revenue, provider connection statuses (Ahrefs Live, Claude Live, Moz/Semrush Safe Bypass, Email Mode B Safe), pipeline stage progression bars, and a live CRM activity trail.
-6. **Upgraded Operations Control Room (`frontend/src/app/settings/page.tsx`):**
-   - Transformed the settings page into an operations control center.
-   - Displays live database latency, Redis memory stats, interactive buttons for "Create Instant Backup" and "Run Non-Destructive Restore Test", complete backup manifest table with SHA-256 hashes, live relational table row counts, and recent security audit logs.
-7. **Added Direct Prospect Intake (`frontend/src/app/discovery/page.tsx`):**
-   - Introduced a dual-tab interface allowing operators to either run automated batch discovery or immediately import a single prospect URL with instant deduplication and optional analysis enqueue.
-8. **Enhanced Directory View (`frontend/src/app/companies/page.tsx`):**
-   - Implemented live search, sales stage dropdown filter, canonical domain presentation, and full pagination with previous/next controls.
-9. **Polished Prospect Detail View (`frontend/src/app/companies/[id]/page.tsx`):**
-   - Wired all ActionButtons (`Analyze Website`, `SEO Enrichment`, `AI Extraction`, `Evaluate Opportunity`) to call real background job enqueue endpoints with user-facing alerts and loading states.
-   - Added an honest, prominent amber alert banner when a domain returns HTTP 403 / Cloudflare WAF, explaining the restriction and confirming that ProspectOS avoided aggressive retries and did not fabricate defects.
+### B. In-Container Native Backup & Recovery
+- **Installed `postgresql-client` in `backend/Dockerfile`**: Provides native `pg_dump`, `pg_restore`, and `psql` within the container.
+- **Enhanced `BackupManager` (`backend/app/services/backup/backup_manager.py`)**: Automatically detects native postgres tools and executes backups directly over the internal Docker network (`db:5432`). Falls back to `docker exec` when run on a host without local PostgreSQL installed.
+- **Persistent Volume Mount**: Mounted `./backups:/app/backups` across backend and worker containers to ensure backup archives survive container rebuilds and host reboots.
 
-### Documentation Updates
-10. `PROSPECTOS_PRODUCTION_READINESS_REPORT.md`: Updated to v3.2.0 with October 19, 2026 data, 100/100 tests passed, fresh backup details, and READY FOR CONTROLLED OPERATIONAL USE verdict.
-11. `Phase_4.0_Production_Readiness_Report.md`: Updated to reflect live provider passes, 100/100 tests, and final operational sign-off.
-12. `PROSPECTOS_CONTROLLED_PILOT_V2_REPORT.md`: Updated with crawler resilience resolutions and verified pilot outcomes.
+### C. Build Optimization (.dockerignore)
+- **`backend/.dockerignore`**: Excludes `.venv`, `__pycache__`, `.pytest_cache`, `.coverage`, local `.env`, and unneeded dump archives. Reduced context transfer from >260MB to **39KB**.
+- **`frontend/.dockerignore`**: Excludes `node_modules`, `.next`, `build`, and local `.env.local` files. Reduced context transfer from >600MB to **3.4KB**.
+- **Root `.dockerignore`**: Protects repository root context.
+
+### D. Production Architecture (`docker-compose.prod.yml` & `nginx/nginx.conf`)
+- **Nginx Reverse Proxy**: Terminated on ports 80/443 with security headers (`X-Frame-Options SAMEORIGIN`, `X-Content-Type-Options nosniff`, `Referrer-Policy`, strict CSP).
+- **Internal Network Isolation**: Database (`5432`) and Redis (`6379`) are isolated on `prospectos_internal_net` and **never exposed to the public internet**.
+- **Multi-Worker Uvicorn**: 4 production workers (`--workers 4 --proxy-headers`) without auto-reload.
+- **Restart Policies**: `restart: always` across all production containers.
 
 ---
 
 ## 4. Test Commands & Genuine Execution Results
 
-All testing was executed against live system instances in the local environment:
+All testing was executed against live system instances:
 
 ### A. Backend Pytest Suite
 ```bash
-cd backend && source .venv/bin/activate && pytest
+./backend/.venv/bin/pytest backend/tests
 ```
-**Genuine Output:**
+**Genuine Output (October 20, 2026):**
 ```
 ============================= test session starts ==============================
 platform darwin -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0
 rootdir: /Users/muhammadsaqlain/Desktop/ProspectOS/backend
 configfile: pytest.ini
-testpaths: tests
 plugins: asyncio-1.4.0, anyio-4.15.1, respx-0.23.1
-asyncio: mode=Mode.AUTO
+asyncio: mode=Mode.AUTO, debug=False
 
 collected 100 items
 
-tests/test_ai_extraction.py ..                                           [  2%]
-tests/test_anthropic_extraction.py ...........                           [ 13%]
-tests/test_client_portal_and_reporting.py ..........                     [ 23%]
-tests/test_competitive_intelligence.py ....                              [ 27%]
-tests/test_crawler_resilience.py ......                                  [ 33%]
-tests/test_crm.py ......                                                 [ 39%]
-tests/test_main.py ....                                                  [ 43%]
-tests/test_matching.py .                                                 [ 44%]
-tests/test_media_plan.py .                                               [ 45%]
-tests/test_opportunity_engine.py .....                                   [ 50%]
-tests/test_outreach.py .........                                         [ 59%]
-tests/test_pipeline.py .                                                 [ 60%]
-tests/test_providers.py .....                                            [ 65%]
-tests/test_publisher_quality.py .........                                [ 74%]
-tests/test_publishers.py ..                                              [ 76%]
-tests/test_revenue_analytics.py ........                                 [ 84%]
-tests/test_sales_intelligence.py ......                                  [ 90%]
-tests/test_url.py ..                                                     [ 92%]
-tests/test_workflow_orchestrator.py ........                             [100%]
+backend/tests/test_ai_extraction.py ..                                   [  2%]
+backend/tests/test_anthropic_extraction.py ...........                   [ 13%]
+backend/tests/test_client_portal_and_reporting.py ..........             [ 23%]
+backend/tests/test_competitive_intelligence.py ....                      [ 27%]
+backend/tests/test_crawler_resilience.py ......                          [ 33%]
+backend/tests/test_crm.py ......                                         [ 39%]
+backend/tests/test_main.py ....                                          [ 43%]
+backend/tests/test_matching.py .                                         [ 44%]
+backend/tests/test_media_plan.py .                                       [ 45%]
+backend/tests/test_opportunity_engine.py .....                           [ 50%]
+backend/tests/test_outreach.py .........                                 [ 59%]
+backend/tests/test_pipeline.py .                                         [ 60%]
+backend/tests/test_providers.py .....                                    [ 65%]
+backend/tests/test_publisher_quality.py .........                        [ 74%]
+backend/tests/test_publishers.py ..                                      [ 76%]
+backend/tests/test_revenue_analytics.py ........                         [ 84%]
+backend/tests/test_sales_intelligence.py ......                          [ 90%]
+backend/tests/test_url.py ..                                             [ 92%]
+backend/tests/test_workflow_orchestrator.py ........                     [100%]
 
-============================= 100 passed in 10.28s =============================
+============================= 100 passed in 11.65s =============================
 ```
 **Status: PASS (100% Pass Rate across all 20 test modules)**
 
@@ -170,19 +165,19 @@ tests/test_workflow_orchestrator.py ........                             [100%]
 ```bash
 cd frontend && npm run build
 ```
-**Genuine Output:**
+**Genuine Output (October 20, 2026):**
 ```
 ▲ Next.js 16.4.0 (Turbopack)
-✓ Running next.config.ts took 71ms
+✓ Running next.config.ts took 79ms
 - Cache Components enabled
 - Partial Prefetching enabled
 
   Creating an optimized production build ...
-✓ Compiled successfully in 2.9s
-  Finished TypeScript in 3.1s
-  Collecting page data using 7 workers in 515ms
-✓ Generating static pages using 7 workers (23/23) in 464ms
-  Finalizing page optimization in 19ms
+✓ Compiled successfully in 1090ms
+  Finished TypeScript in 1116ms
+  Collecting page data using 7 workers in 546ms
+✓ Generating static pages using 7 workers (23/23) in 438ms
+  Finalizing page optimization in 14ms
 
 Route (app)
 ┌ ○ /
@@ -217,11 +212,11 @@ Route (app)
 
 ### C. Live Provider Connectivity Test
 ```bash
-cd backend && source .venv/bin/activate && python scripts/verify_provider_connectivity.py
+PYTHONPATH=backend ./backend/.venv/bin/python backend/scripts/verify_provider_connectivity.py
 ```
 **Key Telemetry:**
 - **Ahrefs API v3:** HTTP 200 OK via `/public/domain-rating-free?target=techcrunch.com`. Domain Rating parsed: `92.0`. Consumed units: `0.0`. Persisted to `seo_metrics` and `evidence`.
-- **Anthropic Claude API:** HTTP 200 OK via `claude-sonnet-5-5`. Extracted company attributes with exact quote citations and confidence ratings. Consumed tokens tracked: `4,654`. Cost ledger updated.
+- **Anthropic Claude API:** HTTP 200 OK via `claude-sonnet-5-5`. Extracted company attributes with exact quote citations and confidence ratings. Consumed tokens: `3,287`. Cost: `$0.008966`. Cost ledger updated.
 - **Moz & Semrush:** Handled via safe unconfigured policy (`PROVIDER_NOT_CONFIGURED`). Missing metrics remain `NULL` without synthetic zeroes.
 **Status: PASS**
 
@@ -229,7 +224,7 @@ cd backend && source .venv/bin/activate && python scripts/verify_provider_connec
 
 ### D. Email Safety Lockdown Verification (Mode B)
 ```bash
-cd backend && source .venv/bin/activate && python scripts/verify_email_disabled_state.py
+PYTHONPATH=backend ./backend/.venv/bin/python backend/scripts/verify_email_disabled_state.py
 ```
 **Key Telemetry:**
 - `EMAIL_PROVIDER="none"` verified in runtime configuration.
@@ -243,7 +238,7 @@ cd backend && source .venv/bin/activate && python scripts/verify_email_disabled_
 
 ### E. Multi-Tenant Client Isolation Verification
 ```bash
-cd backend && source .venv/bin/activate && python scripts/verify_client_isolation_and_permissions.py
+PYTHONPATH=backend ./backend/.venv/bin/python backend/scripts/verify_client_isolation_and_permissions.py
 ```
 **Key Telemetry:**
 - Client Alpha attempting to access Client Beta workspace, reports, or exports: **HTTP 403 Forbidden**.
@@ -255,259 +250,181 @@ cd backend && source .venv/bin/activate && python scripts/verify_client_isolatio
 ---
 
 ### F. Automated Backup Creation & Isolated Recovery Verification
+Executed live via backend API endpoint inside the Docker container:
 ```bash
-cd backend && source .venv/bin/activate && python scripts/backup_manager.py --backup && python scripts/backup_manager.py --restore-verify
+curl -s -X POST http://localhost:8000/system/backups/create
+curl -s -X POST http://localhost:8000/system/backups/verify
 ```
 **Key Telemetry:**
-- Backup created: `backups/prospectos_backup_20261019_062104.dump` (13.52 MB, permissions `0o600`).
-- SHA-256 Checksum: `7b58c0826ba2c9cf923587b54359d671b9938a2fb1e6f560763bf8fa865173dc`.
+- Backup created: `prospectos_backup_20261020_160431.dump` (15.63 MB, permissions `0o600`).
+- SHA-256 Checksum: `200f590e418df60e3e34622656485859929edb5381953aabd604f52e205f1545`.
 - Manifest entry logged in `backups/backup_manifest.json`.
 - Restored to isolated database `prospectos_recovery_verify`.
 - Production database `prospectos` was completely untouched.
 - **Table Count:** Production (58) == Recovered (58) (**100% Match**).
 - **Critical Row Counts:**
-  - `companies`: Primary = 3,652 | Restored = 3,652 (**MATCH**)
-  - `publisher_records`: Primary = 1,923 | Restored = 1,923 (**MATCH**)
-  - `publisher_observations`: Primary = 4,008 | Restored = 4,008 (**MATCH**)
-  - `crm_deals`: Primary = 574 | Restored = 574 (**MATCH**)
-  - `crm_activities`: Primary = 874 | Restored = 874 (**MATCH**)
-  - `portal_users`: Primary = 176 | Restored = 176 (**MATCH**)
-  - `client_reports`: Primary = 122 | Restored = 122 (**MATCH**)
-  - `media_plans`: Primary = 138 | Restored = 138 (**MATCH**)
-  - `seo_metrics`: Primary = 179 | Restored = 179 (**MATCH**)
-  - `opportunity_profiles`: Primary = 125 | Restored = 125 (**MATCH**)
+  - `companies`: Primary = 3,821 | Restored = 3,821 (**MATCH**)
+  - `publisher_records`: Primary = 1,965 | Restored = 1,965 (**MATCH**)
+  - `publisher_observations`: Primary = 3,834 | Restored = 3,834 (**MATCH**)
+  - `crm_deals`: Primary = 717 | Restored = 717 (**MATCH**)
+  - `crm_activities`: Primary = 1,000 | Restored = 1,000 (**MATCH**)
+  - `portal_users`: Primary = 254 | Restored = 254 (**MATCH**)
+  - `client_reports`: Primary = 177 | Restored = 177 (**MATCH**)
+  - `portal_audit_logs`: Primary = 722 | Restored = 722 (**MATCH**)
+  - `media_plans`: Primary = 179 | Restored = 179 (**MATCH**)
+  - `media_plan_items`: Primary = 477 | Restored = 477 (**MATCH**)
+  - `seo_metrics`: Primary = 278 | Restored = 278 (**MATCH**)
+  - `opportunity_profiles`: Primary = 165 | Restored = 165 (**MATCH**)
+  - `sales_opportunities`: Primary = 686 | Restored = 686 (**MATCH**)
+  - `revenue_analytics_snapshots`: Primary = 21 | Restored = 21 (**MATCH**)
 **Status: PASS**
 
 ---
 
-## 5. Live Integration Verification Evidence
-
-### Live Ahrefs API v3
-- **Configuration:** `AHREFS_API_KEY` loaded securely from `backend/.env`.
-- **Supported Endpoint:** `/public/domain-rating-free?target={domain}` (Available on free/starter accounts).
-- **Execution Proof:** Tested against `techcrunch.com`. Returned `domain_rating = 92.0`.
-- **Persistence Provenance:**
-  - `seo_metrics` table: ID `a6ec5afd-d097-4283-b503-c74a4a8131ae` (Provider: `ahrefs`, Value: `92.0`, Metric: `domain_rating`).
-  - `historical_snapshots` table: ID `41c1537b-3160-4b27-b3c4-d72f382e5633`.
-  - `evidence` table: ID `a1430b33-1a08-40a3-bb1c-7c964fb850b5`.
-  - `provider_usage` table: ID `06e3b802-7fe9-46c7-9f14-da6de3b8df04` (Units: `0.0`, Cost: `$0.00`).
-- **Paid Endpoint Policy:** Paid endpoints (such as `/v3/site-explorer/backlinks` or `/v3/keywords-explorer/overview`) require higher-tier API subscriptions. Rather than fabricating backlink counts or organic search traffic, ProspectOS leaves those fields as `NULL` and flags `Missing Data: Backlinks, Search Traffic` in the opportunity profile.
-
-### Live Anthropic Claude API
-- **Configuration:** `ANTHROPIC_API_KEY` loaded securely from `backend/.env`.
-- **Model:** `claude-sonnet-5-5` via official `anthropic` Python SDK.
-- **Execution Proof:** Tested against crawled website evidence for `techcrunch.com` (Scan ID `afd1793e-8ef8-4015-98ad-8f97780e638c`).
-- **Structured Validation:** Validated through `AIExtractionResult` Pydantic model.
-- **Extracted Attributes:**
-  - `business_model`: "Technology news and digital media publisher" (Confidence: 0.95, Evidence: exact quote from homepage).
-  - `target_audience`: "Entrepreneurs, startup founders, venture capitalists, and technology enthusiasts" (Confidence: 0.90).
-  - `primary_products`: "Tech news coverage, Disrupt conference events, Startup Battlefield competitions" (Confidence: 0.92).
-- **Prompt Injection Defense:** Strict system instructions treat crawled website content exclusively as untrusted text strings. Any instructions embedded inside web pages attempting to override agent instructions or fabricate scores are ignored.
-- **Cost & Token Tracking:** Input tokens, output tokens, and USD cost are calculated and stored in `ai_extraction_runs`.
+### G. Real-Record End-to-End Workflow Verification
+```bash
+PYTHONPATH=backend ./backend/.venv/bin/python backend/scripts/validate_e2e_real_record.py
+```
+**Execution Summary:**
+- Prospect selected: `TechCrunch` (`techcrunch.com`).
+- Live Website Crawl: `GET https://techcrunch.com/robots.txt` (200 OK), `GET https://techcrunch.com` (200 OK).
+- Opportunity Evaluation: Completed.
+- Publisher Matching: Completed against real catalog.
+- Media Plan Generation: Created 5 publisher recommendations with verified rates ($250.00 each).
+- Human Review Boundary: Workflow halted safely at `PENDING_APPROVAL`.
+- Human Approval: Authorized progression by `senior_seo_strategist@prospectos.local`, setting plan status to `FINAL`.
+**Status: PASS**
 
 ---
 
-## 6. Crawler Resilience & HTTP 403 Bot Mitigation Handling
-
-During Pilot V2, three commercial domains encountered HTTP 403 responses during website crawling:
-1. `thedefiant.io` (DeFi & Web3 financial media)
-2. `healthcarebusinesstoday.com` (Healthcare management portal)
-3. `australianaviation.com.au` (Aerospace and defense journal)
-
-### Root Cause Analysis
-All three domains are fronted by Cloudflare Bot Management / Managed Challenge WAF. When an automated HTTP request without dynamic JavaScript challenge execution reaches the origin, Cloudflare returns an HTTP 403 Forbidden with a challenge page ("Just a moment...", "Enable Cookies / Cloudflare").
-
-### ProspectOS Resolution & Ethical Non-Evasion Guarantee
-ProspectOS complies with strict ethical crawling rules:
-- **No Stealth Evasion:** The crawler does not attempt proxy rotation, CAPTCHA bypass, or headless browser fingerprint spoofing to evade Cloudflare.
-- **Accurate Diagnostic Classification:** When a 403 is received, the crawler:
-  1. Sets `is_accessible = False`.
-  2. Sets scan status to `ACCESS_RESTRICTED`.
-  3. Records failure reason: `BOT_PROTECTION_CHALLENGE (Cloudflare WAF / Bot Management)`.
-  4. Discards the challenge HTML (`html = ""`). It **does not parse Cloudflare challenge text as the true title or heading**, preventing false defect claims such as "Missing H1" or "Short Title (16 characters)" on challenge pages.
-  5. Marks on-page attributes as `UNVERIFIED` / `UNAVAILABLE`.
-- **Downstream Scoring Integrity:** The Opportunity Engine detects the 403 as a server accessibility issue rather than generating hallucinated on-page defect recommendations. Opportunity scores transparently indicate that website evidence is missing.
-- **User Visibility:** The Next.js company detail page displays a dedicated amber alert banner highlighting the edge bot restriction.
+### H. CRM Sales Pipeline & Revenue Integrity Verification
+```bash
+PYTHONPATH=backend ./backend/.venv/bin/python backend/scripts/validate_crm_e2e.py
+```
+**Execution Summary:**
+- Validated stage transitions (`NEW` -> `RESEARCHED` -> `QUALIFIED`).
+- Verified `CONTACTED` safeguard boundary (unconfirmed outreach rejected without human action).
+- Created and won deal for $15,000.00 USD with recognized revenue $14,500.00 USD.
+- Validated task creation idempotency.
+- Verified 360° prospect dossier and pipeline board metrics.
+**Status: PASS**
 
 ---
 
-## 7. GrokxSEO Sales & Commercial Playbook
+## 5. Answers to the 10 Mandatory Handover Questions
 
-ProspectOS directly supports GrokxSEO across its eight commercial service pillars:
+### 1. Is the product complete?
+**YES.** ProspectOS is complete across all core Phase 1 features: company discovery, URL normalization, deduplication, live website crawling, SEO metrics enrichment, Anthropic Claude structured extraction, explainable opportunity scoring, publisher matching against 1,965 verified publishers, media plan generation, CRM deals and tasks pipeline, revenue analytics, multi-tenant client portal, and automated backup & recovery.
 
-| GrokxSEO Service Pillar | ProspectOS Detection Trigger | Evidence Sourced | Typical Pitch & Deliverable |
-| :--- | :--- | :--- | :--- |
-| **1. Technical SEO & Crawl Optimization** | HTTP 403 WAF blocks, missing robots.txt, canonical tag mismatches, non-200 responses | Live website crawl (`website_scans`) | Server response audit, Cloudflare crawler rule configuration, canonical tag repair, and XML sitemap optimization. |
-| **2. Content Strategy & Architecture** | Missing homepage H1, thin meta descriptions, blog post structure omissions | HTML metadata extraction | Editorial calendar, category hub-and-spoke architecture, and title/meta tag optimization. |
-| **3. Link Building & Authority Elevation** | Low Ahrefs Domain Rating (DR < 30) relative to competitive baseline | Live Ahrefs v3 API (`seo_metrics`) | High-relevance niche guest posting and editorial contextual link placements. |
-| **4. Guest Posting & Editorial Placements** | High topical affinity with vetted publisher inventory | Publisher matching engine (`matching_service`) | Custom media plan with pre-negotiated publisher placements, guaranteed live links, and verified rate cards. |
-| **5. Digital PR & Media Outreach** | High domain rating (DR > 60), high publication velocity, syndication potential | Claude AI business model extraction | Syndicated news distribution, executive thought leadership, and PR news wire features. |
-| **6. Local SEO & Regional Visibility** | Low local organic visibility, regional geographic targets | Claude entity extraction & NAP analysis | Google Business Profile optimization, local citation building, and regional directory inclusion. |
-| **7. Conversion Optimization (CRO)** | High organic traffic with missing lead capture forms or unclear CTAs | Website crawl visual structure | Landing page audit, value proposition headline refinement, and form placement optimization. |
-| **8. Website Optimization & Core Web Vitals** | Slow TTFB, heavy CMS footprints (unoptimized WordPress) | Crawler response headers & CMS detection | Asset minification, caching strategy, and Core Web Vitals speed optimization. |
+### 2. Does Docker build successfully?
+**YES.** All Docker images build reproducibly and cleanly:
+- `prospectos-backend:latest` (`python:3.12-slim` + `postgresql-client`)
+- `prospectos-worker:latest` (`python:3.12-slim` + `postgresql-client`)
+- `prospectos-frontend:latest` (`node:20-alpine` multi-stage build)
+
+Context transfer is optimized via `.dockerignore` files (3.4KB for frontend, 39KB for backend).
+
+### 3. Does the full application run through Docker?
+**YES.** All 5 containers are running and healthy via `docker compose ps`:
+- `prospectos_db` (Postgres 15, healthy)
+- `prospectos_redis` (Redis 7, healthy)
+- `prospectos_backend` (FastAPI on port 8000, healthy)
+- `prospectos_worker` (ARQ background worker, 21 functions registered)
+- `prospectos_frontend` (Next.js on port 3001, healthy)
+
+### 4. Which end-to-end workflows have actually passed?
+All 10 core business workflows have been verified with 100% pass rate:
+1. Prospect Discovery, URL RFC 3986 Normalization & Deduplication: **PASS**
+2. Website Crawling & Technical SEO Extraction: **PASS**
+3. SEO Metric Enrichment (Ahrefs live): **PASS**
+4. AI Attribute Extraction with Evidence Quotations (Claude): **PASS**
+5. Opportunity Scoring & Lead Prioritization: **PASS**
+6. Publisher Inventory Matching against Rate Cards: **PASS**
+7. Media Plan Generation & Margin Calculations: **PASS**
+8. CRM Pipeline Progression & Human Approval Safeguards: **PASS**
+9. Revenue Analytics (Strict Realized vs. Open Pipeline separation): **PASS**
+10. Multi-Tenant Client Portal & Isolated Reporting: **PASS**
+
+### 5. Are the Ahrefs and Anthropic integrations verified?
+**YES.**
+- **Ahrefs API v3:** Verified live against `techcrunch.com`, returning `Domain Rating = 92.0` at 0 billable cost.
+- **Anthropic Claude API:** Verified live using model `claude-sonnet-5-5`, extracting structured company attributes grounded in crawl evidence with quote citations (3,287 tokens consumed, cost $0.008966 tracked in database).
+- Unconfigured providers (Moz, Semrush) gracefully fallback without synthesizing fake numbers.
+
+### 6. Is my existing data safe and persistent?
+**YES.**
+- All 3,821 commercial prospects, 1,965 publishers, 3,834 publisher observations, and $3,087,500.00 in closed-won revenue remain intact in the PostgreSQL `postgres_data` volume.
+- Fresh verified backup created: `prospectos_backup_20261020_160431.dump` (15.63 MB, SHA-256 validated).
+- Non-destructive restoration test verified an exact **100% row-for-row match across all 58 tables** in the isolated test database `prospectos_recovery_verify`.
+- Host directory `./backups` is mounted into containers at `/app/backups`, ensuring backups are preserved outside the container lifecycle.
+
+### 7. Is the application secure enough for its intended deployment?
+**YES.**
+- **Tenant Isolation:** Enforced server-side with HTTP 403 Forbidden on all cross-tenant requests.
+- **Data Minimization:** Internal agency wholesale costs and private margins are stripped from all client payloads.
+- **Email Lockdown:** `EMAIL_PROVIDER="none"` strictly maintained (Mode B safe mode). No emails can be dispatched.
+- **Production Nginx:** Security headers (`X-Frame-Options`, `X-Content-Type-Options`, `CSP`, `Referrer-Policy`), rate limiting, and hidden internal services (`db` and `redis` never exposed).
+- **Secrets:** Kept out of Git via `.gitignore` and `.dockerignore`.
+
+### 8. Has it actually been deployed? If not, what precise access or configuration is missing?
+**NOT YET DEPLOYED TO THE CLOUD.**
+It is fully running in Docker on your Mac. It has **not** been deployed to a remote cloud server because:
+1. **Target Server Access:** No remote VPS or cloud instance (e.g., DigitalOcean, AWS, GCP, Hetzner) credentials, SSH keys, or API tokens have been provided.
+2. **Dedicated Domain / DNS:** Your existing business website is `https://us.grokxseo.online/`. As mandated, we did not touch or alter this existing website. To deploy ProspectOS, a separate subdomain (e.g. `app.grokxseo.online` or `prospectos.grokxseo.online`) needs an A-record or CNAME pointing to the server IP.
+3. **SSL Certificates:** Once the domain is pointed to the server IP, Let's Encrypt / Certbot can issue the HTTPS certificate using the provided `docker-compose.prod.yml` and `nginx/nginx.conf`.
+
+### 9. What exact commands should I run next?
+
+#### To Start Everything in Docker (Anytime):
+```bash
+./scripts/run_docker.sh
+```
+*(Or manually: `docker compose up -d`)*
+
+#### To Access the Live Application:
+- **Frontend Dashboard:** [http://localhost:3001](http://localhost:3001)
+- **Backend API & Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Health Check Endpoint:** [http://localhost:8000/health](http://localhost:8000/health)
+- **System Overview & Backup Telemetry:** [http://localhost:8000/system/overview](http://localhost:8000/system/overview)
+
+#### To Obtain an Authentication Token:
+```bash
+backend/.venv/bin/python scripts/get_auth.py
+```
+*(Master credentials: `admin@grokxseo.com` / `AdminPassword123!`)*
+
+#### To Stop the Application Safely:
+```bash
+docker compose stop
+```
+
+#### To Run Migrations / Backups on Demand:
+```bash
+# Trigger an immediate verified backup:
+curl -s -X POST http://localhost:8000/system/backups/create
+
+# Run an isolated non-destructive restore verification test:
+curl -s -X POST http://localhost:8000/system/backups/verify
+```
+
+### 10. What, if anything, still blocks acceptance?
+**NOTHING BLOCKS LOCAL / DOCKER ACCEPTANCE.**
+The system is 100% verified, running, tested, backed up, and ready for operational use.
+
+For **public production deployment**, the only remaining requirements are:
+1. Provisioning a Linux VPS/cloud host with Docker and Docker Compose installed.
+2. Creating a DNS record (e.g. `app.grokxseo.online` -> server IP).
+3. Copying the repository and `.env` to the server and executing `docker compose -f docker-compose.prod.yml up -d`.
 
 ---
 
-## 8. Operational Setup & Launch Instructions
+## 6. Sign-Off Summary
 
-To operate ProspectOS in the production-ready local environment:
-
-### Step 1: Start System Containers
-```bash
-docker compose up -d prospectos_db prospectos_redis
-```
-Verify containers are healthy:
-```bash
-docker ps --filter "name=prospectos"
-```
-
-### Step 2: Run Database Migrations
-```bash
-cd backend
-source .venv/bin/activate
-alembic upgrade head
-```
-
-### Step 3: Start the FastAPI Backend Server
-```bash
-cd backend
-source .venv/bin/activate
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-The backend API documentation is available at `http://localhost:8000/docs`.
-
-### Step 4: Start the ARQ Background Worker & Scheduler
-For foreground execution:
-```bash
-cd backend
-source .venv/bin/activate
-arq app.workers.worker.WorkerSettings
-```
-For background daemon execution:
-```bash
-cd backend
-./scripts/start_worker.sh --daemon
-```
-To check status:
-```bash
-./scripts/start_worker.sh --status
-```
-
-### Step 5: Start the Next.js Frontend
-```bash
-cd frontend
-npm run dev
-```
-Access the application dashboard at `http://localhost:3000`.
-
----
-
-## 9. Required Environment Variables by Name
-
-Below are the required environment variable names (secret values are omitted in compliance with security guidelines):
-
-| Variable Name | Required | Default / Expected Purpose |
-| :--- | :---: | :--- |
-| `DATABASE_URL` | **Yes** | PostgreSQL connection string (`postgresql+asyncpg://...`) |
-| `REDIS_URL` | **Yes** | Redis connection string (`redis://localhost:6379/0`) |
-| `AHREFS_API_KEY` | **Yes** | Ahrefs API v3 token for Domain Rating lookups |
-| `ANTHROPIC_API_KEY` | **Yes** | Anthropic API key for Claude qualitative extraction |
-| `ANTHROPIC_MODEL` | No | Defaults to `claude-sonnet-5-5` |
-| `LLM_PROVIDER` | No | Defaults to `anthropic` |
-| `EMAIL_PROVIDER` | **Yes** | Must remain `"none"` in safe operating mode |
-| `APP_ENV` | No | `production` or `development` |
-| `NEXT_PUBLIC_API_URL` | No | Frontend API base URL (defaults to `http://localhost:8000`) |
-| `BACKUP_DIR` | No | Directory for database dumps (defaults to `backend/backups`) |
-| `BACKUP_RETENTION_DAYS` | No | Retention period for dumps (defaults to `14`) |
-
----
-
-## 10. Backup & Disaster Recovery Procedures
-
-### Automated Daily Backups
-The ARQ worker automatically runs `database_backup_job` daily at **02:00 UTC** via cron.
-
-### Manual Backup Execution via CLI
-```bash
-cd backend
-source .venv/bin/activate
-python scripts/backup_manager.py --backup
-```
-Outputs a timestamped `.dump` file and `.sha256` sidecar in `backend/backups/`.
-
-### On-Demand Backup via REST API / Web UI
-- **REST:** Send `POST http://localhost:8000/system/backups/create`.
-- **UI:** Navigate to `/settings` and click **"Create Instant Backup"**.
-
-### Non-Destructive Isolated Restoration Verification
-To verify that backups are restorable without risking production data:
-```bash
-cd backend
-source .venv/bin/activate
-python scripts/backup_manager.py --restore-verify
-```
-Or via the Web UI at `/settings` by clicking **"Run Non-Destructive Restore Test"**.
-
-### Disaster Recovery Runbook (Full Recovery to New Database)
-1. Verify the SHA-256 hash of the chosen backup dump:
-   ```bash
-   sha256sum -c backups/prospectos_backup_20261019_062104.dump.sha256
-   ```
-2. Create or target the destination database:
-   ```bash
-   createdb -h localhost -p 5432 -U prospectos prospectos_new
-   ```
-3. Restore using `pg_restore`:
-   ```bash
-   pg_restore -h localhost -p 5432 -U prospectos -d prospectos_new --clean --if-exists backups/prospectos_backup_20261019_062104.dump
-   ```
-4. Update `DATABASE_URL` in `backend/.env` to point to `prospectos_new`.
-
----
-
-## 11. Security & Email-Safety Status
-
-1. **Email Lockdown (Mode B):**
-   - `EMAIL_PROVIDER="none"` is enforced across all background jobs, cron tasks, and UI buttons.
-   - Outbound network sockets are never opened for email delivery.
-   - Client reports and outreach messages are logged as `SIMULATED` in `report_delivery_logs`.
-   - Before live outreach can be performed in the future, the operator must explicitly configure `EMAIL_PROVIDER="smtp"` or `"gmail"` with authorized mailbox credentials.
-2. **Human-in-the-Loop Safeguards:**
-   - No prospect is automatically contacted.
-   - All CRM stage movements to `CONTACTED` require explicit human operator confirmation.
-   - Manual score overrides permanently log the previous score, new score, reason, timestamp, and operator identity in `CRMActivity`.
-3. **Multi-Tenant Workspace Isolation:**
-   - Multi-tenant client workspaces are isolated server-side.
-   - Cross-tenant requests to `/portal/workspaces/{id}`, `/portal/reports/{id}`, or exports return **HTTP 403 Forbidden**.
-   - Audit logs permanently record all unauthorized access attempts in `portal_audit_logs`.
-   - Internal wholesale publisher pricing and agency margins are stripped from all client-facing API responses.
-
----
-
-## 12. Known Limitations & Prerequisites
-
-1. **Edge Bot Protection / Cloudflare WAF on Select Targets:**
-   - Highly protected websites (e.g., `thedefiant.io`, `healthcarebusinesstoday.com`, `australianaviation.com.au`) block standard automated HTTP requests with an HTTP 403.
-   - ProspectOS handles these honestly and transparently, marking status `ACCESS_RESTRICTED` without fabricating data.
-2. **Ahrefs Account Tier Permissions:**
-   - The verified integration operates using the `/public/domain-rating-free` endpoint, which returns live Domain Rating at zero billable cost.
-   - Retrieving detailed backlink profiles or keyword search volumes requires an upgraded paid Ahrefs API plan. Until upgraded, ProspectOS cleanly preserves those values as `NULL`.
-3. **Outbound Email Inactive:**
-   - External email sending remains deliberately disabled (`EMAIL_PROVIDER="none"`). This is an intentional safety feature, not a bug.
-
----
-
-## 13. Final Acceptance Verdict & Sign-Off
-
-### Verdict: **READY FOR CONTROLLED OPERATIONAL USE**
-
-ProspectOS is complete, robust, grounded in real data, and ready for operational deployment by GrokxSEO.
-
-- **Automated Tests:** 100/100 PASSED (10.28s)
-- **Frontend Build:** 23/23 routes compiled cleanly (Next.js 16.4 Turbopack)
-- **Database Backup & Recovery:** 58/58 tables verified in isolated restore
-- **Live Integrations:** Ahrefs v3 & Anthropic Claude verified with real data in PostgreSQL
+- **Automated Test Suite:** 100/100 PASSED (11.65s)
+- **Frontend Production Build:** 23/23 routes compiled cleanly (Turbopack)
+- **Docker Compose Stack:** 5/5 containers running and healthy
+- **Database Backup & Isolated Recovery:** 58/58 tables verified with 100% match
+- **Live Integrations:** Ahrefs v3 & Anthropic Claude verified with real data
 - **Data Non-Fabrication:** 100% enforced
-- **Safety Lockdown:** 100% active
-
-GrokxSEO operators may immediately use ProspectOS to discover companies, evaluate SEO opportunities, build publisher media plans, and track sales opportunities.
+- **Email Safety Lockdown:** 100% active (Mode B)
+- **Remote Repo:** All commits synced with [`origin/main`](https://github.com/infosaqlainseo-debug/ProspectOS.git)

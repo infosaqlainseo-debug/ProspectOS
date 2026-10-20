@@ -8,20 +8,40 @@ import hashlib
 import json
 import logging
 import os
+import shutil
 import subprocess
 import time
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Dict, Any, List, Optional
+from urllib.parse import urlparse
 import uuid
+
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-BACKUP_DIR = Path(os.getenv("BACKUP_DIR", "backups"))
+# Determine default backup directory relative to project root or container app root
+_ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
+_DEFAULT_BACKUP_DIR = Path("/app/backups") if Path("/app/app").exists() else _ROOT_DIR / "backups"
+BACKUP_DIR = Path(os.getenv("BACKUP_DIR", str(_DEFAULT_BACKUP_DIR)))
 MANIFEST_FILE = BACKUP_DIR / "backup_manifest.json"
 CONTAINER_NAME = os.getenv("POSTGRES_CONTAINER", "prospectos_db")
 DB_USER = os.getenv("POSTGRES_USER", "user")
 DB_NAME = os.getenv("POSTGRES_DB", "prospectos")
+
+
+def _get_db_connection_params() -> Dict[str, str]:
+    db_url = getattr(settings, "DATABASE_URL", "")
+    clean_url = db_url.replace("+asyncpg", "") if "+asyncpg" in db_url else db_url
+    parsed = urlparse(clean_url)
+    return {
+        "host": parsed.hostname or "localhost",
+        "port": str(parsed.port or 5432),
+        "user": parsed.username or os.getenv("POSTGRES_USER", "user"),
+        "password": parsed.password or os.getenv("POSTGRES_PASSWORD", "password"),
+        "database": parsed.path.lstrip("/") or os.getenv("POSTGRES_DB", "prospectos"),
+    }
 
 
 class BackupManager:
@@ -32,6 +52,7 @@ class BackupManager:
         self.backup_dir.mkdir(parents=True, exist_ok=True)
         self.container_name = container_name
         self.manifest_path = self.backup_dir / "backup_manifest.json"
+        self.has_native_pg = shutil.which("pg_dump") is not None and shutil.which("psql") is not None
 
     def _read_manifest(self) -> List[Dict[str, Any]]:
         if not self.manifest_path.exists():
@@ -73,15 +94,30 @@ class BackupManager:
         start_time = time.time()
         logger.info(f"Starting database backup: {backup_filename} (UTC {now.isoformat()})")
 
-        # Command to stream pg_dump from container
-        cmd = [
-            "docker", "exec", self.container_name,
-            "pg_dump", "-U", DB_USER, "-d", DB_NAME, "-F", "c", "-b"
-        ]
+        params = _get_db_connection_params()
+        env = os.environ.copy()
+        if params["password"]:
+            env["PGPASSWORD"] = params["password"]
+
+        if self.has_native_pg:
+            cmd = [
+                "pg_dump",
+                "-h", params["host"],
+                "-p", params["port"],
+                "-U", params["user"],
+                "-d", params["database"],
+                "-F", "c",
+                "-b"
+            ]
+        else:
+            cmd = [
+                "docker", "exec", self.container_name,
+                "pg_dump", "-U", params["user"], "-d", params["database"], "-F", "c", "-b"
+            ]
 
         try:
             with open(backup_path, "wb") as f_out:
-                proc = subprocess.run(cmd, stdout=f_out, stderr=subprocess.PIPE, check=True)
+                proc = subprocess.run(cmd, stdout=f_out, stderr=subprocess.PIPE, env=env if self.has_native_pg else None, check=True)
 
             duration_sec = round(time.time() - start_time, 2)
             # Secure file permissions (rw-------)
@@ -170,7 +206,7 @@ class BackupManager:
 
     def restore_to_isolated_database(
         self,
-        backup_filename: str,
+        backup_filename: Optional[str] = None,
         isolated_db_name: str = "prospectos_recovery_verify"
     ) -> Dict[str, Any]:
         """
@@ -178,6 +214,13 @@ class BackupManager:
         validating schema, table counts, and row counts against the live database.
         NEVER restores over the primary production database.
         """
+        if not backup_filename:
+            manifest = self._read_manifest()
+            successful = [e for e in manifest if e.get("status") == "SUCCESS"]
+            if not successful:
+                raise ValueError("No successful backup archive found in manifest to verify.")
+            backup_filename = sorted(successful, key=lambda x: x["timestamp_utc"])[-1]["filename"]
+
         backup_path = self.backup_dir / backup_filename
         if not backup_path.exists():
             raise FileNotFoundError(f"Backup file not found: {backup_path}")
@@ -194,32 +237,64 @@ class BackupManager:
         logger.info(f"Integrity verified for {backup_filename} (SHA-256 match).")
         logger.info(f"Preparing isolated recovery database: '{isolated_db_name}'...")
 
+        params = _get_db_connection_params()
+        env = os.environ.copy()
+        if params["password"]:
+            env["PGPASSWORD"] = params["password"]
+
         # 1. Drop and re-create isolated verification database
-        drop_cmd = [
-            "docker", "exec", self.container_name,
-            "psql", "-U", DB_USER, "-d", "postgres",
-            "-c", f"DROP DATABASE IF EXISTS {isolated_db_name};"
-        ]
-        subprocess.run(drop_cmd, check=True, capture_output=True)
+        if self.has_native_pg:
+            drop_cmd = [
+                "psql", "-h", params["host"], "-p", params["port"],
+                "-U", params["user"], "-d", "postgres",
+                "-c", f"DROP DATABASE IF EXISTS {isolated_db_name};"
+            ]
+            subprocess.run(drop_cmd, check=True, capture_output=True, env=env)
 
-        create_cmd = [
-            "docker", "exec", self.container_name,
-            "psql", "-U", DB_USER, "-d", "postgres",
-            "-c", f"CREATE DATABASE {isolated_db_name};"
-        ]
-        subprocess.run(create_cmd, check=True, capture_output=True)
+            create_cmd = [
+                "psql", "-h", params["host"], "-p", params["port"],
+                "-U", params["user"], "-d", "postgres",
+                "-c", f"CREATE DATABASE {isolated_db_name};"
+            ]
+            subprocess.run(create_cmd, check=True, capture_output=True, env=env)
 
-        # 2. Restore custom-format dump into isolated verification database
-        logger.info(f"Restoring {backup_filename} into isolated database '{isolated_db_name}'...")
-        restore_cmd = [
-            "docker", "exec", "-i", self.container_name,
-            "pg_restore", "-U", DB_USER, "-d", isolated_db_name,
-            "--no-owner", "--no-privileges"
-        ]
-        with open(backup_path, "rb") as f_in:
-            proc = subprocess.run(restore_cmd, stdin=f_in, capture_output=True)
-            if proc.returncode != 0:
-                logger.warning(f"pg_restore finished with code {proc.returncode}: {proc.stderr.decode('utf-8')[:300]}")
+            # 2. Restore custom-format dump into isolated verification database
+            logger.info(f"Restoring {backup_filename} into isolated database '{isolated_db_name}'...")
+            restore_cmd = [
+                "pg_restore", "-h", params["host"], "-p", params["port"],
+                "-U", params["user"], "-d", isolated_db_name,
+                "--no-owner", "--no-privileges"
+            ]
+            with open(backup_path, "rb") as f_in:
+                proc = subprocess.run(restore_cmd, stdin=f_in, capture_output=True, env=env)
+                if proc.returncode != 0:
+                    logger.warning(f"pg_restore finished with code {proc.returncode}: {proc.stderr.decode('utf-8')[:300]}")
+        else:
+            drop_cmd = [
+                "docker", "exec", self.container_name,
+                "psql", "-U", params["user"], "-d", "postgres",
+                "-c", f"DROP DATABASE IF EXISTS {isolated_db_name};"
+            ]
+            subprocess.run(drop_cmd, check=True, capture_output=True)
+
+            create_cmd = [
+                "docker", "exec", self.container_name,
+                "psql", "-U", params["user"], "-d", "postgres",
+                "-c", f"CREATE DATABASE {isolated_db_name};"
+            ]
+            subprocess.run(create_cmd, check=True, capture_output=True)
+
+            # 2. Restore custom-format dump into isolated verification database
+            logger.info(f"Restoring {backup_filename} into isolated database '{isolated_db_name}'...")
+            restore_cmd = [
+                "docker", "exec", "-i", self.container_name,
+                "pg_restore", "-U", params["user"], "-d", isolated_db_name,
+                "--no-owner", "--no-privileges"
+            ]
+            with open(backup_path, "rb") as f_in:
+                proc = subprocess.run(restore_cmd, stdin=f_in, capture_output=True)
+                if proc.returncode != 0:
+                    logger.warning(f"pg_restore finished with code {proc.returncode}: {proc.stderr.decode('utf-8')[:300]}")
 
         # 3. Compare schema and row counts between primary and isolated database
         critical_tables = [
@@ -328,10 +403,23 @@ class BackupManager:
         }
 
     def _run_psql_query(self, database: str, query: str) -> str:
-        cmd = [
-            "docker", "exec", self.container_name,
-            "psql", "-U", DB_USER, "-d", database,
-            "-t", "-A", "-c", query
-        ]
-        res = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        return res.stdout.strip()
+        params = _get_db_connection_params()
+        if self.has_native_pg:
+            env = os.environ.copy()
+            if params["password"]:
+                env["PGPASSWORD"] = params["password"]
+            cmd = [
+                "psql", "-h", params["host"], "-p", params["port"],
+                "-U", params["user"], "-d", database,
+                "-t", "-A", "-c", query
+            ]
+            res = subprocess.run(cmd, capture_output=True, text=True, check=True, env=env)
+            return res.stdout.strip()
+        else:
+            cmd = [
+                "docker", "exec", self.container_name,
+                "psql", "-U", params["user"], "-d", database,
+                "-t", "-A", "-c", query
+            ]
+            res = subprocess.run(cmd, capture_output=True, text=True, check=True)
+            return res.stdout.strip()

@@ -44,11 +44,31 @@ async def health_check_job(ctx, job_id: str):
 async def company_discovery_job(ctx, job_id: str, request_dict: dict):
     logger.info(f"Executing company discovery job: {job_id}")
     request = DiscoveryRequest(**request_dict)
-    provider = GitHubOrgProvider()
+    
+    from app.services.discovery.directory import BusinessDirectoryProvider
+    from app.services.discovery.duckduckgo import DuckDuckGoProvider
+    from app.services.discovery.github import GitHubOrgProvider
+
+    sources = [s.lower() for s in (request.source_preferences or [])]
+    if "directory" in sources or (request.country and "mex" in request.country.lower()):
+        provider = BusinessDirectoryProvider()
+    elif "github" in sources:
+        provider = GitHubOrgProvider()
+    else:
+        provider = DuckDuckGoProvider()
     
     async with async_session_maker() as session:
-        await run_discovery_pipeline(job_id, request, provider, session)
+        await run_discovery_pipeline(uuid.UUID(job_id), request, provider, session)
     logger.info(f"Finished discovery job: {job_id}")
+
+async def google_drive_sync_job(ctx, company_id: str, sync_type: str = "AUTOMATIC"):
+    logger.info(f"Executing google_drive_sync_job for company {company_id}")
+    from app.services.gdrive.service import GoogleDriveService
+    async with async_session_maker() as session:
+        service = GoogleDriveService(session)
+        result = await service.sync_company_to_drive(uuid.UUID(company_id), sync_type=sync_type)
+        return result
+
 
 from app.services.intelligence.runner import WebsiteIntelligenceRunner
 import uuid
@@ -439,6 +459,7 @@ class WorkerSettings:
         scheduled_report_generation_job,
         report_delivery_job,
         database_backup_job,
+        google_drive_sync_job,
     ]
     cron_jobs = [
         cron(workflow_scheduler_tick, minute=None, second=0),

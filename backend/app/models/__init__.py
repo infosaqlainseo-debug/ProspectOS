@@ -27,6 +27,33 @@ class Company(Base):
     qualification_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
     stage_updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
     stage_reason: Mapped[str | None] = mapped_column(String, nullable=True)
+    
+    # Lead Social & Outreach Channels
+    facebook_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    instagram_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    whatsapp_number: Mapped[str | None] = mapped_column(String, nullable=True)
+    whatsapp_click_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    phone_number: Mapped[str | None] = mapped_column(String, nullable=True)
+    public_email: Mapped[str | None] = mapped_column(String, nullable=True)
+    contact_page_url: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    # Lead Scoring & GrokxSEO Opportunities
+    lead_priority: Mapped[str] = mapped_column(String, default="MEDIUM", nullable=False) # LOW, MEDIUM, HIGH, CRITICAL
+    lead_score: Mapped[float | None] = mapped_column(Float, nullable=True) # 0-100 normalized score
+    lead_score_components: Mapped[dict | None] = mapped_column(JSONB, nullable=True) # SEO opp, business fit, evidence quality, website potential
+    recommended_services: Mapped[list | None] = mapped_column(JSONB, nullable=True) # e.g. ["Technical SEO", "Link Building", "Digital PR"]
+    seo_summary_findings: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+
+    # Google Drive Synchronization
+    gdrive_file_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    gdrive_file_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    gdrive_synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    gdrive_sync_status: Mapped[str] = mapped_column(String, default="NOT_SYNCED", nullable=False) # NOT_SYNCED, PENDING, SYNCED, FAILED
+    
+    # Ownership & Follow-up
+    lead_owner: Mapped[str | None] = mapped_column(String, nullable=True)
+    next_followup_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
     first_discovered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -985,4 +1012,86 @@ class PortalAuditLog(Base):
     details: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     ip_address: Mapped[str | None] = mapped_column(String, nullable=True)
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now, index=True)
+
+
+# =========================================================================
+# Phase 4.1: Google Drive Sync & Social Multi-Channel Outreach
+# =========================================================================
+
+class GoogleDriveConnection(Base):
+    __tablename__ = "google_drive_connections"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    is_connected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    account_email: Mapped[str | None] = mapped_column(String, nullable=True)
+    access_token_encrypted: Mapped[str | None] = mapped_column(Text, nullable=True)
+    refresh_token_encrypted: Mapped[str | None] = mapped_column(Text, nullable=True)
+    token_expiry: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    client_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    client_secret_encrypted: Mapped[str | None] = mapped_column(Text, nullable=True)
+    selected_folder_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    selected_folder_path: Mapped[str] = mapped_column(String, default="ProspectOS/Leads/", nullable=False)
+    master_sheet_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    master_sheet_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    export_format: Mapped[str] = mapped_column(String, default="GOOGLE_SHEET", nullable=False) # GOOGLE_SHEET, CSV, JSON
+    last_sync_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_sync_status: Mapped[str] = mapped_column(String, default="IDLE", nullable=False) # IDLE, RUNNING, SUCCESS, FAILED
+    last_error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    auto_sync_enabled: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now)
+
+
+class GoogleDriveSyncJob(Base):
+    __tablename__ = "google_drive_sync_jobs"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    company_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("companies.id"), index=True)
+    status: Mapped[str] = mapped_column(String, default="PENDING", nullable=False, index=True) # PENDING, RUNNING, COMPLETED, FAILED
+    sync_type: Mapped[str] = mapped_column(String, default="AUTOMATIC", nullable=False) # AUTOMATIC, MANUAL
+    resource_id: Mapped[str | None] = mapped_column(String, nullable=True) # Drive file ID or sheet row ID
+    resource_url: Mapped[str | None] = mapped_column(String, nullable=True)
+    destination_folder: Mapped[str | None] = mapped_column(String, nullable=True)
+    attempts: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    synced_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now)
+
+
+class SocialConnection(Base):
+    __tablename__ = "social_connections"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    channel: Mapped[str] = mapped_column(String, unique=True, nullable=False, index=True) # FACEBOOK, INSTAGRAM, WHATSAPP
+    account_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    account_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    phone_number: Mapped[str | None] = mapped_column(String, nullable=True) # For WhatsApp Business
+    is_connected: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    permissions: Mapped[list | None] = mapped_column(JSONB, nullable=True)
+    access_token_encrypted: Mapped[str | None] = mapped_column(Text, nullable=True)
+    token_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    messaging_enabled: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    last_successful_operation_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    configuration_error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    settings_data: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now, onupdate=get_utc_now)
+
+
+class SocialMessageLog(Base):
+    __tablename__ = "social_message_logs"
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    company_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("companies.id"), index=True)
+    contact_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("company_contacts.id"), nullable=True)
+    channel: Mapped[str] = mapped_column(String, nullable=False, index=True) # FACEBOOK, INSTAGRAM, WHATSAPP
+    direction: Mapped[str] = mapped_column(String, default="OUTBOUND", nullable=False) # OUTBOUND, INBOUND
+    recipient_identifier: Mapped[str] = mapped_column(String, nullable=False) # phone, page url, or profile handle
+    sender_account: Mapped[str | None] = mapped_column(String, nullable=True)
+    message_text: Mapped[str] = mapped_column(Text, nullable=False)
+    template_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    status: Mapped[str] = mapped_column(String, default="PREPARED", nullable=False, index=True) # PREPARED, CLICK_TO_CHAT, SENT, DELIVERED, READ, FAILED, BLOCKED
+    api_message_id: Mapped[str | None] = mapped_column(String, nullable=True)
+    click_to_chat_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    error_details: Mapped[str | None] = mapped_column(Text, nullable=True)
+    explicit_user_confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now, index=True)
+
 

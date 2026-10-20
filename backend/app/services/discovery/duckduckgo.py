@@ -1,6 +1,6 @@
 import asyncio
 from typing import List, AsyncGenerator
-from duckduckgo_search import AsyncDDGS
+from duckduckgo_search import DDGS
 from app.schemas.discovery import DiscoveryRequest, DiscoveryResult
 from app.services.discovery.base import DiscoveryProvider
 
@@ -38,8 +38,8 @@ class DuckDuckGoProvider(DiscoveryProvider):
         query = self._build_query(request)
         
         try:
-            # AsyncDDGS allows async search
-            results = await AsyncDDGS().text(query, max_results=request.target_count * 2)
+            # Run DDGS text search in thread for non-blocking execution
+            results = await asyncio.to_thread(lambda: list(DDGS().text(query, max_results=request.target_count * 2)))
             
             # Since DDG returns web pages, we convert them to basic discovery results
             # The pipeline will normalize URLs and deduplicate.

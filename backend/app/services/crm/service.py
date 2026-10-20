@@ -22,6 +22,7 @@ from app.models import (
 )
 from app.schemas.crm import (
     VALID_SALES_STAGES,
+    KANBAN_BOARD_STAGES,
     VALID_DEAL_STAGES,
     VALID_TASK_TYPES,
     VALID_TASK_STATUSES,
@@ -273,6 +274,23 @@ class CRMService:
             "description": company.description,
             "country": company.country,
             "city": company.city,
+            "public_email": company.public_email,
+            "phone_number": company.phone_number,
+            "facebook_url": company.facebook_url,
+            "instagram_url": company.instagram_url,
+            "whatsapp_number": company.whatsapp_number,
+            "whatsapp_click_url": company.whatsapp_click_url,
+            "gdrive_file_id": company.gdrive_file_id,
+            "gdrive_file_url": company.gdrive_file_url,
+            "gdrive_sync_status": company.gdrive_sync_status or "NOT_SYNCED",
+            "gdrive_synced_at": company.gdrive_synced_at.isoformat() if company.gdrive_synced_at else None,
+            "lead_priority": company.lead_priority or "MEDIUM",
+            "lead_score": company.lead_score,
+            "lead_score_components": company.lead_score_components,
+            "recommended_services": company.recommended_services,
+            "seo_summary_findings": company.seo_summary_findings,
+            "lead_owner": company.lead_owner,
+            "next_followup_date": company.next_followup_date.isoformat() if company.next_followup_date else None,
             "created_at": company.created_at.isoformat() if company.created_at else None
         }
 
@@ -301,7 +319,7 @@ class CRMService:
 
     async def get_pipeline_board(self) -> List[PipelineColumn]:
         columns = []
-        for stage in VALID_SALES_STAGES:
+        for stage in KANBAN_BOARD_STAGES:
             stage_title = stage.replace("_", " ").title()
             stmt_comp = select(Company).where(Company.sales_stage == stage).order_by(desc(Company.stage_updated_at)).limit(50)
             companies = (await self.session.execute(stmt_comp)).scalars().all()

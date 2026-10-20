@@ -105,11 +105,28 @@ async def list_crm_prospects(
                 sales_stage=c.sales_stage or "NEW",
                 stage_updated_at=c.stage_updated_at or c.created_at,
                 stage_reason=c.stage_reason,
-                opportunity_score=opp_row[0] if opp_row else None,
-                recommended_service=opp_row[1] if opp_row else None,
+                opportunity_score=c.lead_score or (opp_row[0] if opp_row else None),
+                recommended_service=(c.recommended_services[0] if c.recommended_services else None) or (opp_row[1] if opp_row else None),
                 total_deals=d_row[0] if d_row else 0,
                 open_deal_value=float(d_row[1]) if d_row else 0.0,
-                created_at=c.created_at
+                created_at=c.created_at,
+                country=c.country,
+                city=c.city,
+                public_email=c.public_email,
+                phone_number=c.phone_number,
+                facebook_url=c.facebook_url,
+                instagram_url=c.instagram_url,
+                whatsapp_number=c.whatsapp_number,
+                whatsapp_click_url=c.whatsapp_click_url,
+                gdrive_file_id=c.gdrive_file_id,
+                gdrive_file_url=c.gdrive_file_url,
+                gdrive_sync_status=c.gdrive_sync_status or "NOT_SYNCED",
+                lead_priority=c.lead_priority or "MEDIUM",
+                lead_score=c.lead_score,
+                lead_score_components=c.lead_score_components,
+                recommended_services=c.recommended_services,
+                seo_summary_findings=c.seo_summary_findings,
+                lead_owner=c.lead_owner
             )
         )
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Building2, LayoutDashboard, Search, Globe, LineChart, BrainCircuit, Activity, ShieldAlert, Settings, BookOpen, GitFork, Mail, Kanban, Target, BarChart3, Swords, FileText, ShieldCheck } from "lucide-react";
+import { Building2, LayoutDashboard, Search, Globe, LineChart, BrainCircuit, Activity, ShieldAlert, Settings, BookOpen, GitFork, Mail, Kanban, Target, BarChart3, Swords, FileText, ShieldCheck, HardDrive, Share2 } from "lucide-react";
 
 import { Suspense } from "react";
 
@@ -13,7 +13,7 @@ function SidebarContent() {
   const routes = [
     { href: "/", label: "Overview", icon: LayoutDashboard },
     { href: "/companies", label: "Companies", icon: Building2 },
-    { href: "/discovery", label: "Discovery", icon: Search },
+    { href: "/discovery", label: "Discovery & Scraping", icon: Search },
     { href: "/website-intelligence", label: "Website Intelligence", icon: Globe },
     { href: "/seo-intelligence", label: "SEO Intelligence", icon: LineChart },
     { href: "/ai-intelligence", label: "AI Intelligence", icon: BrainCircuit },
@@ -23,7 +23,9 @@ function SidebarContent() {
     { href: "/portal", label: "Client Portal", icon: ShieldCheck },
     { href: "/publishers", label: "Publishers", icon: BookOpen },
     { href: "/workflows", label: "Workflows", icon: GitFork },
-    { href: "/outreach", label: "Outreach", icon: Mail },
+    { href: "/outreach", label: "Outreach Composer", icon: Mail },
+    { href: "/social-connections", label: "Social Accounts", icon: Share2 },
+    { href: "/google-drive", label: "Google Drive", icon: HardDrive },
     { href: "/crm", label: "CRM & Pipeline", icon: Kanban },
     { href: "/analytics", label: "Revenue Analytics", icon: BarChart3 },
     { href: "/jobs", label: "Jobs", icon: Activity },

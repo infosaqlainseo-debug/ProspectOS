@@ -12,8 +12,8 @@ from app.db.session import get_db
 from app.models import Job
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.redis import get_redis_settings
-from app.api import discovery, analysis, enrichment, ai, companies, opportunity, workflows, publishers, matching, media_plan, outreach, crm, sales_intelligence, publisher_quality, analytics, competitive, portal, system
-app = FastAPI(title="ProspectOS API", version="1.4.0")
+from app.api import discovery, analysis, enrichment, ai, companies, opportunity, workflows, publishers, matching, media_plan, outreach, crm, sales_intelligence, publisher_quality, analytics, competitive, portal, system, gdrive, social
+app = FastAPI(title="ProspectOS API", version="1.5.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,6 +46,8 @@ app.include_router(sales_intelligence.router)
 app.include_router(analytics.router)
 app.include_router(competitive.router)
 app.include_router(portal.router)
+app.include_router(gdrive.router)
+app.include_router(social.router)
 
 @app.get("/health")
 async def health_check():

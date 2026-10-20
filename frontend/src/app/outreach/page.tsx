@@ -9,7 +9,10 @@ import {
   OutreachMessage,
   OutreachSuppression,
   EmailProviderStatus,
-  Company
+  Company,
+  MultiChannelDrafts,
+  SocialConnectionStatus,
+  SocialMessageLog
 } from "@/lib/api";
 import {
   Mail,
@@ -29,11 +32,36 @@ import {
   ExternalLink,
   ChevronRight,
   Eye,
-  Info
+  Info,
+  Share2,
+  PhoneCall,
+  MessageSquare,
+  Lock,
+  Check,
+  RotateCcw,
+  Sparkles
 } from "lucide-react";
 
+function FacebookIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+    </svg>
+  );
+}
+
+function InstagramIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+    </svg>
+  );
+}
+
 export default function OutreachPage() {
-  const [activeTab, setActiveTab] = useState<"drafts" | "campaigns" | "contacts" | "history">("drafts");
+  const [activeTab, setActiveTab] = useState<"composer" | "drafts" | "campaigns" | "contacts" | "history">("composer");
   const [providerStatus, setProviderStatus] = useState<EmailProviderStatus | null>(null);
   
   // Data lists
@@ -46,6 +74,19 @@ export default function OutreachPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
+
+  // Multi-Channel Outreach Composer States (Module E5)
+  const [multiDrafts, setMultiDrafts] = useState<MultiChannelDrafts | null>(null);
+  const [loadingMultiDrafts, setLoadingMultiDrafts] = useState(false);
+  const [selectedChannel, setSelectedChannel] = useState<"facebook" | "instagram" | "whatsapp" | "email">("whatsapp");
+  const [composerText, setComposerText] = useState("");
+  const [composerSubject, setComposerSubject] = useState("");
+  const [composerCta, setComposerCta] = useState("");
+  const [composerRecipient, setComposerRecipient] = useState("");
+  const [explicitUserConfirmed, setExplicitUserConfirmed] = useState(false);
+  const [sendingSocial, setSendingSocial] = useState(false);
+  const [socialLogs, setSocialLogs] = useState<SocialMessageLog[]>([]);
+  const [socialConns, setSocialConns] = useState<SocialConnectionStatus[]>([]);
 
   // Modals & Drawers
   const [selectedDraft, setSelectedDraft] = useState<OutreachDraft | null>(null);
@@ -79,14 +120,15 @@ export default function OutreachPage() {
   const loadAllData = async () => {
     setLoading(true);
     try {
-      const [pStatus, dList, cList, contList, mList, sList, compList] = await Promise.all([
+      const [pStatus, dList, cList, contList, mList, sList, compList, sConns] = await Promise.all([
         api.getEmailProviderStatus().catch(() => null),
         api.getDrafts().catch(() => []),
         api.getCampaigns().catch(() => []),
         api.getContacts().catch(() => []),
         api.getOutreachMessages().catch(() => []),
         api.getSuppressions().catch(() => []),
-        api.getCompanies().catch(() => [])
+        api.getCompanies().catch(() => []),
+        api.getSocialConnections().catch(() => [])
       ]);
 
       if (pStatus) setProviderStatus(pStatus);
@@ -96,13 +138,88 @@ export default function OutreachPage() {
       setMessages(mList);
       setSuppressions(sList);
       setCompanies(compList);
+      setSocialConns(sConns);
       if (compList.length > 0 && !selectedCompanyId) {
         setSelectedCompanyId(compList[0].id);
+        loadMultiDrafts(compList[0].id);
       }
     } catch (err: any) {
       showNotice("error", err.message || "Failed to load outreach data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadMultiDrafts = async (companyId: string) => {
+    if (!companyId) return;
+    setLoadingMultiDrafts(true);
+    try {
+      const [draftsRes, logsRes] = await Promise.all([
+        api.getMultiChannelDrafts(companyId).catch(() => null),
+        api.getSocialMessages(companyId).catch(() => [])
+      ]);
+      if (draftsRes) {
+        setMultiDrafts(draftsRes);
+        syncChannelDraft(draftsRes, selectedChannel);
+      }
+      setSocialLogs(logsRes);
+    } catch (err: any) {
+      console.error("Failed to load multi-channel drafts", err);
+    } finally {
+      setLoadingMultiDrafts(false);
+    }
+  };
+
+  const syncChannelDraft = (data: MultiChannelDrafts, channel: "facebook" | "instagram" | "whatsapp" | "email") => {
+    const ch = data.drafts[channel];
+    if (ch) {
+      setComposerText(ch.message_text || "");
+      setComposerCta(ch.cta || "");
+      setComposerRecipient(ch.recipient || "");
+      setComposerSubject((ch as any).subject || "");
+      setExplicitUserConfirmed(false);
+    }
+  };
+
+  const handleChannelChange = (channel: "facebook" | "instagram" | "whatsapp" | "email") => {
+    setSelectedChannel(channel);
+    if (multiDrafts) {
+      syncChannelDraft(multiDrafts, channel);
+    }
+  };
+
+  const handleCompanySelect = (companyId: string) => {
+    setSelectedCompanyId(companyId);
+    loadMultiDrafts(companyId);
+  };
+
+  const handleSendSocial = async () => {
+    if (!selectedCompanyId || !composerText.trim() || !composerRecipient.trim()) {
+      showNotice("error", "Company, recipient, and message text are required.");
+      return;
+    }
+    if (!explicitUserConfirmed) {
+      showNotice("error", "Explicit user authorization confirmation is required before sending.");
+      return;
+    }
+
+    setSendingSocial(true);
+    try {
+      const res = await api.sendSocialMessage({
+        company_id: selectedCompanyId,
+        channel: selectedChannel.toUpperCase(),
+        message_text: composerText.trim(),
+        recipient_identifier: composerRecipient.trim(),
+        explicit_user_confirmed: true
+      });
+      showNotice("success", `Message logged to CRM (${res.channel}) for ${res.recipient}. Status: ${res.delivery_status}`);
+      const updatedLogs = await api.getSocialMessages(selectedCompanyId).catch(() => []);
+      setSocialLogs(updatedLogs);
+      setExplicitUserConfirmed(false);
+    } catch (err: any) {
+      showNotice("error", err.message || "Failed to dispatch message");
+    } finally {
+      setSendingSocial(false);
     }
   };
 
@@ -336,8 +453,9 @@ export default function OutreachPage() {
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
-        <nav className="flex space-x-8">
+        <nav className="flex space-x-6 overflow-x-auto">
           {[
+            { id: "composer", label: "Unified Outreach Composer", icon: Share2 },
             { id: "drafts", label: `Drafts & Approvals (${drafts.length})`, icon: FileText },
             { id: "campaigns", label: `Campaigns (${campaigns.length})`, icon: Building2 },
             { id: "contacts", label: `Contacts & Provenance (${contacts.length})`, icon: UserCheck },
@@ -349,7 +467,7 @@ export default function OutreachPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`py-3 px-1 border-b-2 font-medium text-sm flex items-center gap-2 ${
+                className={`py-3 px-1 border-b-2 font-medium text-sm flex items-center gap-2 whitespace-nowrap ${
                   active
                     ? "border-indigo-600 text-indigo-600 font-semibold"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -362,6 +480,323 @@ export default function OutreachPage() {
           })}
         </nav>
       </div>
+
+      {/* TAB 0: UNIFIED OUTREACH COMPOSER (Module E5) */}
+      {activeTab === "composer" && (
+        <div className="space-y-6">
+          {/* Prospect Selector & Status Bar */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm space-y-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-indigo-50 border border-indigo-100 rounded-lg text-indigo-600">
+                  <Share2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-bold text-gray-900">Multi-Channel Outreach Composer</h2>
+                  <p className="text-xs text-gray-500">
+                    Evidence-grounded personalized messaging for Facebook, Instagram, WhatsApp, and Email.
+                  </p>
+                </div>
+              </div>
+
+              {/* Company Picker */}
+              <div className="w-full md:w-80">
+                <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1">
+                  Select Target Lead:
+                </label>
+                <select
+                  value={selectedCompanyId}
+                  onChange={(e) => handleCompanySelect(e.target.value)}
+                  className="w-full p-2 border border-gray-300 rounded-lg text-xs font-semibold text-gray-900 focus:ring-2 focus:ring-indigo-500"
+                >
+                  {companies.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.company_name || c.canonical_domain} ({c.country || "Target Market"})
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Evidence & Findings Card */}
+            {loadingMultiDrafts ? (
+              <div className="py-8 text-center text-xs text-gray-500 flex items-center justify-center gap-2">
+                <RefreshCw className="w-4 h-4 animate-spin text-indigo-600" />
+                Loading grounded SEO evidence and drafting multi-channel outreach...
+              </div>
+            ) : multiDrafts ? (
+              <div className="bg-gradient-to-r from-slate-50 to-indigo-50/40 p-4 rounded-xl border border-indigo-100/60 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-gray-900">{multiDrafts.company_name}</span>
+                    <span className="text-xs text-gray-500 font-mono">({multiDrafts.domain})</span>
+                    {multiDrafts.opportunity_score !== undefined && (
+                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-indigo-100 text-indigo-800">
+                        SEO Opp Score: {multiDrafts.opportunity_score}/100
+                      </span>
+                    )}
+                    {multiDrafts.dr_score !== undefined && (
+                      <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-100 text-amber-800">
+                        DR: {multiDrafts.dr_score}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="text-xs text-indigo-700 font-medium">
+                    Recommended: <strong>{multiDrafts.recommended_services?.join(", ")}</strong>
+                  </div>
+                </div>
+
+                <p className="text-xs text-gray-700 leading-relaxed font-medium">
+                  {multiDrafts.summary}
+                </p>
+
+                {/* Evidence Points */}
+                {multiDrafts.evidence_points && multiDrafts.evidence_points.length > 0 && (
+                  <div className="pt-2 border-t border-indigo-100/60">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-gray-600 mb-1">
+                      Verified Audit Evidence:
+                    </div>
+                    <ul className="grid grid-cols-1 md:grid-cols-2 gap-1.5 text-xs text-gray-600">
+                      {multiDrafts.evidence_points.map((pt, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                          <span>{pt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </div>
+
+          {/* Channel Selector & Active Composer */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            {/* Channel Tabs */}
+            <div className="flex border-b border-gray-200 bg-gray-50/50">
+              {[
+                { id: "whatsapp", label: "WhatsApp Business", icon: PhoneCall, color: "text-emerald-600" },
+                { id: "facebook", label: "Facebook Page", icon: FacebookIcon, color: "text-blue-600" },
+                { id: "instagram", label: "Instagram Direct", icon: InstagramIcon, color: "text-pink-600" },
+                { id: "email", label: "Cold Email", icon: Mail, color: "text-indigo-600" }
+              ].map((ch) => {
+                const Icon = ch.icon;
+                const isSelected = selectedChannel === ch.id;
+                return (
+                  <button
+                    key={ch.id}
+                    onClick={() => handleChannelChange(ch.id as any)}
+                    className={`flex-1 py-3 px-4 text-xs font-bold flex items-center justify-center gap-2 border-b-2 transition ${
+                      isSelected
+                        ? "border-indigo-600 bg-white text-gray-900 shadow-sm"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:bg-gray-100/60"
+                    }`}
+                  >
+                    <Icon className={`w-4 h-4 ${ch.color}`} />
+                    {ch.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Composer Form Body */}
+            <div className="p-6 space-y-5">
+              {/* Channel Policy Notice */}
+              <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700">
+                <div className="flex items-center gap-2">
+                  <Info className="w-4 h-4 text-indigo-600 shrink-0" />
+                  <span>
+                    {selectedChannel === "whatsapp" && "WhatsApp Click-to-Chat (https://wa.me/...) enables direct verified outreach. Cloud API messaging requires approved templates and opt-in."}
+                    {selectedChannel === "facebook" && "Direct Facebook Messenger requires an authorized Page and eligible conversation window. Public profile can be opened directly."}
+                    {selectedChannel === "instagram" && "Instagram Graph API requires business accounts and messaging permissions. Direct profile link supported for manual outreach."}
+                    {selectedChannel === "email" && "Email drafts are evidence-grounded. Outbound sending respects system email safety configuration."}
+                  </span>
+                </div>
+
+                {/* External Link if available */}
+                {selectedChannel === "whatsapp" && multiDrafts?.drafts.whatsapp.click_to_chat_url && (
+                  <a
+                    href={multiDrafts.drafts.whatsapp.click_to_chat_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded shadow-sm whitespace-nowrap ml-3"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5 mr-1.5" /> Launch WhatsApp Web <ExternalLink className="w-3 h-3 ml-1" />
+                  </a>
+                )}
+                {selectedChannel === "facebook" && multiDrafts?.drafts.facebook.recipient && (
+                  <a
+                    href={multiDrafts.drafts.facebook.recipient}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded shadow-sm whitespace-nowrap ml-3"
+                  >
+                    Open Page <ExternalLink className="w-3 h-3 ml-1" />
+                  </a>
+                )}
+                {selectedChannel === "instagram" && multiDrafts?.drafts.instagram.recipient && (
+                  <a
+                    href={multiDrafts.drafts.instagram.recipient.startsWith("http") ? multiDrafts.drafts.instagram.recipient : `https://instagram.com/${multiDrafts.drafts.instagram.recipient.replace('@', '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center px-3 py-1 bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs rounded shadow-sm whitespace-nowrap ml-3"
+                  >
+                    Open Profile <ExternalLink className="w-3 h-3 ml-1" />
+                  </a>
+                )}
+              </div>
+
+              {/* Recipient Input */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Recipient Identifier *
+                  </label>
+                  <input
+                    type="text"
+                    value={composerRecipient}
+                    onChange={(e) => setComposerRecipient(e.target.value)}
+                    placeholder={
+                      selectedChannel === "whatsapp"
+                        ? "Phone Number (e.g. +52 55 1234 5678)"
+                        : selectedChannel === "email"
+                        ? "Recipient Email"
+                        : "Profile URL or Username"
+                    }
+                    className="w-full p-2.5 border border-gray-300 rounded-lg text-xs font-mono focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Call To Action (CTA)
+                  </label>
+                  <input
+                    type="text"
+                    value={composerCta}
+                    onChange={(e) => setComposerCta(e.target.value)}
+                    placeholder="e.g. Can we share a free technical SEO audit report?"
+                    className="w-full p-2.5 border border-gray-300 rounded-lg text-xs focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              {/* Subject if Email */}
+              {selectedChannel === "email" && (
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">
+                    Email Subject Line *
+                  </label>
+                  <input
+                    type="text"
+                    value={composerSubject}
+                    onChange={(e) => setComposerSubject(e.target.value)}
+                    placeholder="e.g. Technical SEO observations for example.com"
+                    className="w-full p-2.5 border border-gray-300 rounded-lg text-xs font-semibold focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              )}
+
+              {/* Message Body */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                    Message Body (Evidence-Grounded AI Draft) *
+                  </label>
+                  <span className="text-[11px] text-gray-400 font-mono">
+                    {composerText.length} characters
+                  </span>
+                </div>
+                <textarea
+                  rows={6}
+                  value={composerText}
+                  onChange={(e) => setComposerText(e.target.value)}
+                  placeholder="Enter message text..."
+                  className="w-full p-3 border border-gray-300 rounded-lg text-xs font-medium focus:ring-2 focus:ring-indigo-500 leading-relaxed"
+                />
+              </div>
+
+              {/* Explicit Authorization & Send Action */}
+              <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <label className="flex items-start gap-2.5 text-xs text-gray-800 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={explicitUserConfirmed}
+                    onChange={(e) => setExplicitUserConfirmed(e.target.checked)}
+                    className="h-4 w-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 mt-0.5"
+                  />
+                  <div>
+                    <span className="font-bold text-gray-900">Mandatory Human Send Authorization:</span>
+                    <p className="text-gray-500 text-[11px]">
+                      I confirm that this outreach message is verified against actual findings and compliant with platform policies.
+                    </p>
+                  </div>
+                </label>
+
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={handleSendSocial}
+                    disabled={sendingSocial || !explicitUserConfirmed || !composerText.trim()}
+                    className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition disabled:opacity-50"
+                  >
+                    {sendingSocial ? (
+                      <>
+                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                        Logging & Dispatching...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 mr-2" />
+                        Send & Log to CRM
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Message Log Table */}
+          {socialLogs.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-gray-800">
+                Recent Social Outreach Logs for {multiDrafts?.company_name || "Lead"}
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-gray-50 text-gray-600 font-bold text-[10px] uppercase">
+                    <tr>
+                      <th className="py-2 px-3">Channel</th>
+                      <th className="py-2 px-3">Recipient</th>
+                      <th className="py-2 px-3">Message Excerpt</th>
+                      <th className="py-2 px-3">Status</th>
+                      <th className="py-2 px-3">Sent At</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {socialLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-gray-50">
+                        <td className="py-2 px-3 font-semibold text-gray-900">{log.channel}</td>
+                        <td className="py-2 px-3 font-mono text-gray-600">{log.recipient_identifier}</td>
+                        <td className="py-2 px-3 text-gray-700 max-w-xs truncate">{log.message_text}</td>
+                        <td className="py-2 px-3">
+                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">
+                            {log.delivery_status}
+                          </span>
+                        </td>
+                        <td className="py-2 px-3 text-gray-500 font-mono">
+                          {log.sent_at ? new Date(log.sent_at).toLocaleTimeString() : "—"}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* TAB 1: DRAFTS & APPROVALS */}
       {activeTab === "drafts" && (

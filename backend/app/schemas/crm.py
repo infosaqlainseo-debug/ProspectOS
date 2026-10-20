@@ -5,6 +5,25 @@ from pydantic import BaseModel, Field, ConfigDict
 
 VALID_SALES_STAGES = [
     "NEW",
+    "DATA_VALIDATION_REQUIRED",
+    "RESEARCHED",
+    "QUALIFIED",
+    "READY_FOR_OUTREACH",
+    "CONTACTED",
+    "REPLIED",
+    "INTERESTED",
+    "MEETING_SCHEDULED",
+    "PROPOSAL_SENT",
+    "PROPOSAL_PREPARED",
+    "NEGOTIATION",
+    "WON",
+    "LOST",
+    "NOT_A_FIT",
+    "NURTURE"
+]
+
+KANBAN_BOARD_STAGES = [
+    "NEW",
     "RESEARCHED",
     "QUALIFIED",
     "CONTACTED",
@@ -247,6 +266,26 @@ class UnifiedProspectSummary(BaseModel):
     pending_tasks_count: int = 0
     verified_contacts_count: int = 0
     created_at: datetime
+    
+    # Social & Google Drive Extensions
+    country: Optional[str] = None
+    city: Optional[str] = None
+    public_email: Optional[str] = None
+    phone_number: Optional[str] = None
+    facebook_url: Optional[str] = None
+    instagram_url: Optional[str] = None
+    whatsapp_number: Optional[str] = None
+    whatsapp_click_url: Optional[str] = None
+    gdrive_file_id: Optional[str] = None
+    gdrive_file_url: Optional[str] = None
+    gdrive_sync_status: Optional[str] = "NOT_SYNCED"
+    lead_priority: Optional[str] = "MEDIUM"
+    lead_score: Optional[float] = None
+    lead_score_components: Optional[Dict[str, Any]] = None
+    recommended_services: Optional[List[str]] = None
+    seo_summary_findings: Optional[List[str]] = None
+    lead_owner: Optional[str] = None
+
 
 
 class UnifiedProspectDetail(BaseModel):

@@ -72,6 +72,24 @@ export interface Company {
   target_market?: string;
   country?: string;
   city?: string;
+  lead_score?: number;
+  lead_score_components?: Record<string, any>;
+  recommended_services?: string[];
+  seo_summary_findings?: string[];
+  gdrive_sync_status?: string;
+  gdrive_file_id?: string;
+  gdrive_file_url?: string;
+  gdrive_synced_at?: string;
+  whatsapp_number?: string;
+  whatsapp_click_url?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  phone_number?: string;
+  public_email?: string;
+  contact_page_url?: string;
+  lead_priority?: string;
+  lead_owner?: string;
+  next_followup_date?: string;
   created_at: string;
   updated_at: string;
   first_discovered_at?: string;
@@ -787,8 +805,314 @@ export const api = {
     if (publisherId) q.append('publisher_id', publisherId);
     q.append('limit', String(limit));
     return fetcher<PublisherRefreshLog[]>(`/publishers/refresh/logs?${q.toString()}`);
+  },
+
+  // Module A: Discovery & Scraping
+  parseDiscoveryQuery: async (query: string) => {
+    return fetcher<NLQueryParseResponse>('/discovery/parse-query', {
+      method: 'POST',
+      body: JSON.stringify({ query }),
+    });
+  },
+  getDiscoveryTemplates: async () => {
+    return fetcher<ScrapingTemplate[]>('/discovery/templates');
+  },
+  getDiscoverySources: async () => {
+    return fetcher<SourceAdapterInfo[]>('/discovery/sources');
+  },
+  createDiscoveryJob: async (data: {
+    query?: string;
+    target_count: number;
+    country?: string;
+    city?: string;
+    industry?: string;
+    website_url?: string;
+    company_size?: string;
+    business_type?: string;
+    min_opportunity_score?: number;
+    max_opportunity_score?: number;
+    desired_service?: string;
+    template_id?: string;
+    source_preferences?: string[];
+    exclusion_rules?: string[];
+    include_previously_discovered?: boolean;
+    min_data_quality?: string;
+  }) => {
+    return fetcher<{ job_id: string; job_name: string; status: string; requested_count: number }>('/discovery/jobs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  getDiscoveryJobs: async (status?: string, limit: number = 50) => {
+    const q = new URLSearchParams();
+    if (status) q.append('status', status);
+    q.append('limit', String(limit));
+    return fetcher<DiscoveryJobDetail[]>(`/discovery/jobs?${q.toString()}`);
+  },
+  getDiscoveryJob: async (jobId: string) => {
+    return fetcher<DiscoveryJobDetail>(`/discovery/jobs/${jobId}`);
+  },
+  cancelDiscoveryJob: async (jobId: string) => {
+    return fetcher<{ message: string; job_id: string; status: string }>(`/discovery/jobs/${jobId}/cancel`, {
+      method: 'POST',
+    });
+  },
+  retryDiscoveryJob: async (jobId: string) => {
+    return fetcher<{ message: string; job_id: string; status: string }>(`/discovery/jobs/${jobId}/retry`, {
+      method: 'POST',
+    });
+  },
+
+  // Module D: Google Drive Integration
+  getGDriveStatus: async () => {
+    return fetcher<GoogleDriveStatus>('/google-drive/status');
+  },
+  getGDriveAuthUrl: async (clientId: string, redirectUri: string) => {
+    const q = new URLSearchParams({ client_id: clientId, redirect_uri: redirectUri });
+    return fetcher<{ auth_url: string }>(`/google-drive/auth-url?${q.toString()}`);
+  },
+  connectGDriveOAuth: async (data: { code: string; client_id: string; client_secret: string; redirect_uri: string }) => {
+    return fetcher<{ status: string; account_email: string; master_sheet_url: string }>('/google-drive/connect/oauth', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  connectGDriveManual: async (data: { client_id: string; client_secret: string; refresh_token: string; account_email?: string; selected_folder_path?: string }) => {
+    return fetcher<{ status: string; account_email: string; master_sheet_url: string }>('/google-drive/connect/manual', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  disconnectGDrive: async () => {
+    return fetcher<{ status: string; message: string }>('/google-drive/disconnect', {
+      method: 'POST',
+    });
+  },
+  updateGDriveSettings: async (data: { selected_folder_path?: string; export_format?: string; auto_sync_enabled?: boolean }) => {
+    return fetcher<{ status: string; settings: any }>('/google-drive/settings', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+  syncCompanyToGDrive: async (companyId: string) => {
+    return fetcher<{ status: string; gdrive_file_id: string; gdrive_file_url: string; row_index: number }>(`/google-drive/sync/${companyId}`, {
+      method: 'POST',
+    });
+  },
+  syncAllToGDrive: async () => {
+    return fetcher<{ message: string; queued: boolean; candidate_count: number }>('/google-drive/sync-all', {
+      method: 'POST',
+    });
+  },
+  getGDriveSyncJobs: async (limit: number = 50) => {
+    return fetcher<GoogleDriveSyncJob[]>(`/google-drive/jobs?limit=${limit}`);
+  },
+
+  // Module E & F: Social Connections & Outreach
+  getSocialConnections: async () => {
+    return fetcher<SocialConnectionStatus[]>('/social-connections');
+  },
+  connectSocialChannel: async (channel: string, data: { account_name: string; account_id?: string; phone_number?: string; access_token?: string; messaging_enabled?: boolean; settings_data?: any }) => {
+    return fetcher<SocialConnectionStatus>(`/social-connections/${channel.toLowerCase()}/connect`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  disconnectSocialChannel: async (channel: string) => {
+    return fetcher<{ status: string; channel: string }>(`/social-connections/${channel.toLowerCase()}/disconnect`, {
+      method: 'POST',
+    });
+  },
+  getMultiChannelDrafts: async (companyId: string) => {
+    return fetcher<MultiChannelDrafts>(`/outreach/multi-channel-drafts/${companyId}`);
+  },
+  sendSocialMessage: async (data: { company_id: string; channel: string; message_text: string; recipient_identifier: string; explicit_user_confirmed: boolean; contact_id?: string }) => {
+    return fetcher<{ status: string; channel: string; recipient: string; delivery_status: string; message_id?: string }>('/outreach/social-message', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  getSocialMessages: async (companyId?: string) => {
+    const q = companyId ? `/${companyId}` : '';
+    return fetcher<SocialMessageLog[]>(`/outreach/social-messages${q}`);
   }
 };
+
+// Module A: Discovery & Scraping Interfaces
+export interface NLQueryParseResponse {
+  interpreted_criteria: {
+    target_count: number;
+    country?: string;
+    city?: string;
+    industry?: string;
+    website_url?: string;
+    company_size?: string;
+    business_type?: string;
+    min_opportunity_score?: number;
+    max_opportunity_score?: number;
+    desired_services?: string[];
+    source_preferences?: string[];
+    exclusion_rules?: string[];
+    include_previously_discovered: boolean;
+    min_data_quality: string;
+  };
+  suggested_job_name: string;
+  source_strategy: string[];
+  extraction_targets: string[];
+  confidence: number;
+  explanation: string;
+}
+
+export interface ScrapingTemplate {
+  id: string;
+  name: string;
+  target_market: string;
+  industry: string;
+  default_target_count: number;
+  recommended_services: string[];
+  description: string;
+  sources: string[];
+  extraction_fields: string[];
+  validation_rules: Record<string, any>;
+  scoring_focus: string;
+  requires_paid_apis: boolean;
+  required_api_names: string[];
+}
+
+export interface SourceAdapterInfo {
+  name: string;
+  source_type: string;
+  is_available: boolean;
+  rate_limit: string;
+  description: string;
+  supported_fields: string[];
+  requires_config: boolean;
+  config_status: string;
+}
+
+export interface DiscoveryJobDetail {
+  id: string;
+  job_name?: string;
+  status: string;
+  current_stage?: string;
+  requested_count: number;
+  leads_discovered: number;
+  leads_validated: number;
+  duplicates_skipped: number;
+  records_rejected: number;
+  websites_analyzed: number;
+  leads_saved: number;
+  gdrive_synced_count: number;
+  sources_used: string[];
+  error_summary?: string;
+  started_at?: string;
+  completed_at?: string;
+  duration_seconds?: number;
+  parameters?: Record<string, any>;
+}
+
+// Module D: Google Drive Interfaces
+export interface GoogleDriveStatus {
+  connected: boolean;
+  account_email?: string;
+  selected_folder_path: string;
+  master_sheet_id?: string;
+  master_sheet_url?: string;
+  export_format: string;
+  auto_sync_enabled: boolean;
+  last_successful_sync?: string;
+  last_error_message?: string;
+  total_synced_records: number;
+}
+
+export interface GoogleDriveSyncJob {
+  id: string;
+  company_id: string;
+  company_name: string;
+  status: string;
+  gdrive_file_id?: string;
+  gdrive_file_url?: string;
+  error_message?: string;
+  retry_count: number;
+  sync_started_at?: string;
+  sync_completed_at?: string;
+}
+
+// Module E & F: Social Outreach Interfaces
+export interface SocialConnectionStatus {
+  channel: string;
+  connected: boolean;
+  account_name?: string;
+  account_id?: string;
+  phone_number?: string;
+  messaging_enabled: boolean;
+  messaging_capability: string;
+  token_expiry?: string;
+  last_successful_operation?: string;
+  last_error_message?: string;
+  permissions: string[];
+}
+
+export interface MultiChannelDrafts {
+  company_id: string;
+  company_name: string;
+  domain: string;
+  industry?: string;
+  country?: string;
+  dr_score?: number;
+  opportunity_score?: number;
+  recommended_services: string[];
+  summary: string;
+  evidence_points: string[];
+  drafts: {
+    facebook: {
+      channel: string;
+      eligible: boolean;
+      recipient: string;
+      message_text: string;
+      cta: string;
+      notes: string;
+    };
+    instagram: {
+      channel: string;
+      eligible: boolean;
+      recipient: string;
+      message_text: string;
+      cta: string;
+      notes: string;
+    };
+    whatsapp: {
+      channel: string;
+      eligible: boolean;
+      recipient: string;
+      message_text: string;
+      cta: string;
+      click_to_chat_url?: string;
+      notes: string;
+    };
+    email: {
+      channel: string;
+      eligible: boolean;
+      recipient: string;
+      subject: string;
+      message_text: string;
+      cta: string;
+      notes: string;
+    };
+  };
+}
+
+export interface SocialMessageLog {
+  id: string;
+  company_id: string;
+  channel: string;
+  sender_account?: string;
+  recipient_identifier: string;
+  message_text: string;
+  delivery_status: string;
+  error_details?: string;
+  sent_at?: string;
+}
 
 export interface Workflow {
   id: string;
@@ -1083,11 +1407,19 @@ export interface UnifiedProspectSummary {
   website_url?: string | null;
   industry?: string | null;
   target_market?: string | null;
+  country?: string | null;
   sales_stage: string;
   stage_updated_at: string;
   stage_reason?: string | null;
   opportunity_score?: number | null;
+  lead_score?: number | null;
   recommended_service?: string | null;
+  gdrive_sync_status?: string | null;
+  gdrive_file_url?: string | null;
+  whatsapp_number?: string | null;
+  whatsapp_click_url?: string | null;
+  facebook_url?: string | null;
+  instagram_url?: string | null;
   total_deals: number;
   open_deal_value: number;
   pending_tasks_count: number;

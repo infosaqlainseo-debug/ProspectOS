@@ -44,8 +44,29 @@ import {
   Globe,
   Award,
   ExternalLink,
-  ShieldAlert
+  ShieldAlert,
+  HardDrive,
+  Share2,
+  PhoneCall
 } from "lucide-react";
+
+function FacebookIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+    </svg>
+  );
+}
+
+function InstagramIcon({ className = "w-4 h-4" }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+    </svg>
+  );
+}
 
 const STAGE_ORDER: SalesStage[] = [
   "NEW",
@@ -1207,6 +1228,87 @@ export default function CRMPage() {
                           {prospectDetail.website_scan?.http_status || "N/A"}
                         </span>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Google Drive & Outreach Channels Card */}
+                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <HardDrive className="w-3.5 h-3.5 text-blue-600" /> Google Drive & Outreach Channels
+                      </h4>
+                      {prospectDetail.company?.gdrive_sync_status && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                          prospectDetail.company.gdrive_sync_status === "SYNCED" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                        }`}>
+                          Drive: {prospectDetail.company.gdrive_sync_status}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                      {prospectDetail.company?.gdrive_file_url && (
+                        <div className="sm:col-span-2">
+                          <a
+                            href={prospectDetail.company.gdrive_file_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center text-blue-600 hover:underline font-semibold"
+                          >
+                            <HardDrive className="w-3.5 h-3.5 mr-1" /> View Google Drive Record <ExternalLink className="w-3 h-3 ml-1" />
+                          </a>
+                        </div>
+                      )}
+
+                      {prospectDetail.company?.whatsapp_number && (
+                        <div>
+                          <span className="text-slate-400">WhatsApp:</span>{" "}
+                          <span className="font-mono text-slate-800">{prospectDetail.company.whatsapp_number}</span>
+                          {prospectDetail.company?.whatsapp_click_url && (
+                            <a
+                              href={prospectDetail.company.whatsapp_click_url}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white hover:bg-emerald-700"
+                            >
+                              <PhoneCall className="w-2.5 h-2.5 mr-1" /> wa.me
+                            </a>
+                          )}
+                        </div>
+                      )}
+
+                      {prospectDetail.company?.phone_number && !prospectDetail.company?.whatsapp_number && (
+                        <div>
+                          <span className="text-slate-400">Phone:</span>{" "}
+                          <span className="font-mono text-slate-800">{prospectDetail.company.phone_number}</span>
+                        </div>
+                      )}
+
+                      {prospectDetail.company?.facebook_url && (
+                        <div>
+                          <a
+                            href={prospectDetail.company.facebook_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center text-blue-600 hover:underline"
+                          >
+                            <FacebookIcon className="w-3 h-3 mr-1" /> Facebook Page <ExternalLink className="w-2.5 h-2.5 ml-1" />
+                          </a>
+                        </div>
+                      )}
+
+                      {prospectDetail.company?.instagram_url && (
+                        <div>
+                          <a
+                            href={prospectDetail.company.instagram_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center text-pink-600 hover:underline"
+                          >
+                            <InstagramIcon className="w-3 h-3 mr-1" /> Instagram Profile <ExternalLink className="w-2.5 h-2.5 ml-1" />
+                          </a>
+                        </div>
+                      )}
                     </div>
                   </div>
 

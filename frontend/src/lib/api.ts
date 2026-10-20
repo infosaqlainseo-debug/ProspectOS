@@ -1,7 +1,22 @@
 import useSWR from 'swr';
 import { SWRConfiguration } from 'swr';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const getApiBaseUrl = (): string => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    // In local dev on port 3000/3001 without Nginx, target backend port 8000
+    if (window.location.port === '3000' || window.location.port === '3001') {
+      return `http://${window.location.hostname}:8000`;
+    }
+    // In production behind Nginx (ports 80/443), relative URLs route directly through reverse proxy
+    return '';
+  }
+  return process.env.INTERNAL_API_URL || 'http://backend:8000';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export class ApiError extends Error {
   status: number;

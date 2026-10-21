@@ -1,5 +1,6 @@
 "use client"
 import { useState } from "react"
+import { getApiBaseUrl } from "@/lib/api"
 
 export default function ImportPage() {
   const [file, setFile] = useState<File | null>(null)
@@ -13,7 +14,7 @@ export default function ImportPage() {
     try {
       const formData = new FormData()
       formData.append("file", file)
-      const res = await fetch("http://127.0.0.1:8000/publishers/import/preview", {
+      const res = await fetch(`${getApiBaseUrl()}/publishers/import/preview`, {
         method: "POST",
         body: formData
       })
@@ -42,7 +43,7 @@ export default function ImportPage() {
         },
         rows: preview.preview_rows // the actual endpoint expects rows. In production, read whole file.
       }
-      const res = await fetch("http://127.0.0.1:8000/publishers/import/commit", {
+      const res = await fetch(`${getApiBaseUrl()}/publishers/import/commit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

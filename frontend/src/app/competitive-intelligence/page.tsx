@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import {
+  api,
   getCompanyCompetitors,
   discoverCompetitors,
   addCompanyCompetitor,
@@ -83,19 +84,16 @@ export default function CompetitiveIntelligencePage() {
     async function fetchCompaniesList() {
       setIsLoadingCompanies(true);
       try {
-        const res = await fetch("http://localhost:8000/companies?limit=100");
-        if (res.ok) {
-          const data = await res.json();
-          const mapped = (data.items || data || []).map((c: any) => ({
-            id: c.id,
-            name: c.company_name || c.name || "Unnamed Prospect",
-            domain: c.canonical_domain || c.website_url || "",
-            industry: c.industry || "General"
-          }));
-          setCompanies(mapped);
-          if (mapped.length > 0 && !selectedCompanyId) {
-            setSelectedCompanyId(mapped[0].id);
-          }
+        const companiesList = await api.getCompanies(100);
+        const mapped = (companiesList || []).map((c: any) => ({
+          id: c.id,
+          name: c.company_name || c.name || "Unnamed Prospect",
+          domain: c.canonical_domain || c.website_url || "",
+          industry: c.industry || "General"
+        }));
+        setCompanies(mapped);
+        if (mapped.length > 0 && !selectedCompanyId) {
+          setSelectedCompanyId(mapped[0].id);
         }
       } catch (err) {
         console.error("Failed to fetch companies:", err);

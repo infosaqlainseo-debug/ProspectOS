@@ -92,9 +92,8 @@ export default function WorkflowsPage() {
   useEffect(() => {
     loadData();
     // Fetch available companies for selection
-    fetch('http://localhost:8000/companies?limit=25')
-      .then((r) => r.json())
-      .then((data) => setCompanies(data.items || []))
+    api.getCompanies(25)
+      .then((data) => setCompanies(data || []))
       .catch(() => {});
   }, [loadData]);
 

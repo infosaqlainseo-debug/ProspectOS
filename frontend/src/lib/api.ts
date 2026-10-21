@@ -1,22 +1,31 @@
 import useSWR from 'swr';
 import { SWRConfiguration } from 'swr';
 
-const getApiBaseUrl = (): string => {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
+export const getApiBaseUrl = (): string => {
   if (typeof window !== 'undefined') {
-    // In local dev on port 3000/3001 without Nginx, target backend port 8000
+    // In browser:
+    // If the site is served over HTTPS or accessed from a domain other than raw localhost:
+    // NEVER use http://localhost:8000 because browsers block Mixed Content (HTTPS -> HTTP)
+    const isHttps = window.location.protocol === 'https:';
+    const isRemoteDomain = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+    if (isHttps || isRemoteDomain) {
+      // In production behind Cloudflare Tunnel & Nginx, relative URLs route seamlessly to the API on the same origin
+      return '';
+    }
+
+    // In local standalone dev on port 3000/3001 without Nginx reverse proxy
     if (window.location.port === '3000' || window.location.port === '3001') {
       return `http://${window.location.hostname}:8000`;
     }
-    // In production behind Nginx (ports 80/443), relative URLs route directly through reverse proxy
+
+    // In local dev behind Nginx on port 80
     return '';
   }
+
+  // Server-side / SSR:
   return process.env.INTERNAL_API_URL || 'http://backend:8000';
 };
-
-const API_BASE_URL = getApiBaseUrl();
 
 export class ApiError extends Error {
   status: number;
@@ -29,9 +38,10 @@ export class ApiError extends Error {
   }
 }
 
-async function fetcher<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
+export async function fetcher<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
+  const baseUrl = getApiBaseUrl();
   const url = typeof input === 'string' && input.startsWith('/') 
-    ? `${API_BASE_URL}${input}`
+    ? `${baseUrl}${input}`
     : input;
     
   const response = await fetch(url, {
@@ -394,7 +404,7 @@ export const api = {
     });
   },
   exportMediaPlanUrl: (planId: string) => {
-    return `${API_BASE_URL}/media-plans/${planId}/export/excel`;
+    return `${getApiBaseUrl()}/media-plans/${planId}/export/excel`;
   },
 
   // Phase 2.3 Workflows
@@ -716,7 +726,7 @@ export const api = {
     });
   },
   exportSalesBriefUrl: (companyId: string) => {
-    return `${API_BASE_URL}/sales-intelligence/prospects/${companyId}/brief/export`;
+    return `${getApiBaseUrl()}/sales-intelligence/prospects/${companyId}/brief/export`;
   },
   overrideProspectScore: async (companyId: string, data: { score: number; reason: string; actor?: string }) => {
     return fetcher<SalesIntelligenceScore>(`/sales-intelligence/prospects/${companyId}/override`, {
@@ -2404,7 +2414,7 @@ export async function deliverClientReport(
 export async function exportClientReport(reportId: string, format: 'markdown' | 'html', token?: string): Promise<string> {
   const headers: Record<string, string> = {};
   if (token) headers['Authorization'] = `Bearer ${token}`;
-  const response = await fetch(`${API_BASE_URL}/portal/reports/${reportId}/export?format=${format}`, {
+  const response = await fetch(`${getApiBaseUrl()}/portal/reports/${reportId}/export?format=${format}`, {
     headers,
   });
   return response.text();

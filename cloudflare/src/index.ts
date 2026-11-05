@@ -54,6 +54,7 @@ app.use("*", async (c, next) => {
 app.get("/health", (c) => {
   return c.json({
     status: "ok",
+    version: "2.0.1-staging-acceptance",
     architecture: "Cloudflare Serverless (Workers + D1 + R2)",
     monthly_operating_cost: "$0.00 USD",
     free_tier_status: "ENFORCED",

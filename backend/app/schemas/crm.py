@@ -331,3 +331,214 @@ class CRMReportMetrics(BaseModel):
     pipeline_currency: str = "USD"
     conversion_rates: Dict[str, Optional[float]]
     notes: List[str]
+
+
+# ==========================================
+# 6. Scraper-to-CRM Bridge Schemas
+# ==========================================
+
+class ScraperImportRequest(BaseModel):
+    extracted_record_ids: Optional[List[uuid.UUID]] = None
+    task_id: Optional[uuid.UUID] = None
+    auto_save_valid_only: bool = True
+    default_stage: str = "NEW"
+    tags: List[str] = Field(default_factory=list)
+    lead_source: str = "SCRAPER"
+    conflict_resolution: str = "MERGE" # MERGE, OVERWRITE, SKIP
+
+
+class ScraperImportResponse(BaseModel):
+    success: bool
+    total_processed: int
+    added: int
+    updated: int
+    skipped: int
+    flagged: int
+    imported_ids: List[str] = Field(default_factory=list)
+    message: str
+
+
+# ==========================================
+# 7. Lead Create & Update Schemas
+# ==========================================
+
+class LeadCreate(BaseModel):
+    company_name: str
+    website_url: Optional[str] = None
+    canonical_domain: Optional[str] = None
+    industry: Optional[str] = None
+    country: Optional[str] = None
+    city: Optional[str] = None
+    description: Optional[str] = None
+    company_size: Optional[str] = None
+    contact_person: Optional[str] = None
+    contact_title: Optional[str] = None
+    public_email: Optional[str] = None
+    phone_number: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    sales_stage: str = "NEW"
+    lead_priority: str = "MEDIUM"
+    lead_source: str = "MANUAL"
+    tags: List[str] = Field(default_factory=list)
+    custom_fields: Dict[str, Any] = Field(default_factory=dict)
+
+
+class LeadUpdate(BaseModel):
+    company_name: Optional[str] = None
+    website_url: Optional[str] = None
+    canonical_domain: Optional[str] = None
+    industry: Optional[str] = None
+    country: Optional[str] = None
+    city: Optional[str] = None
+    description: Optional[str] = None
+    company_size: Optional[str] = None
+    contact_person: Optional[str] = None
+    contact_title: Optional[str] = None
+    public_email: Optional[str] = None
+    phone_number: Optional[str] = None
+    linkedin_url: Optional[str] = None
+    sales_stage: Optional[str] = None
+    lead_priority: Optional[str] = None
+    lead_score: Optional[float] = None
+    lead_owner: Optional[str] = None
+    tags: Optional[List[str]] = None
+    custom_fields: Optional[Dict[str, Any]] = None
+    qualification_notes: Optional[str] = None
+
+
+class LeadBulkUpdateRequest(BaseModel):
+    lead_ids: List[uuid.UUID]
+    sales_stage: Optional[str] = None
+    lead_priority: Optional[str] = None
+    add_tags: Optional[List[str]] = None
+    remove_tags: Optional[List[str]] = None
+    lead_owner: Optional[str] = None
+    actor: Optional[str] = "human_reviewer"
+
+
+class LeadBulkDeleteRequest(BaseModel):
+    lead_ids: List[uuid.UUID]
+
+
+# ==========================================
+# 8. Segments & Lists Schemas
+# ==========================================
+
+class CRMLeadSegmentCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    is_dynamic: bool = True
+    filter_criteria: Dict[str, Any] = Field(default_factory=dict)
+    color: str = "blue"
+    icon: Optional[str] = "folder"
+
+
+class CRMLeadSegmentUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    is_dynamic: Optional[bool] = None
+    filter_criteria: Optional[Dict[str, Any]] = None
+    color: Optional[str] = None
+    icon: Optional[str] = None
+
+
+class CRMLeadSegmentResponse(BaseModel):
+    id: uuid.UUID
+    name: str
+    description: Optional[str] = None
+    is_dynamic: bool
+    filter_criteria: Dict[str, Any]
+    color: str
+    icon: Optional[str] = None
+    member_count: int
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ==========================================
+# 9. Adaptive Learning & User Preferences Schemas
+# ==========================================
+
+class CRMUserPreferenceUpdate(BaseModel):
+    preferred_industries: Optional[List[str]] = None
+    preferred_countries: Optional[List[str]] = None
+    min_lead_score: Optional[float] = None
+    scoring_weights: Optional[Dict[str, float]] = None
+    target_market_rules: Optional[Dict[str, Any]] = None
+
+
+class CRMUserPreferenceResponse(BaseModel):
+    user_id: str
+    preferred_industries: List[str]
+    preferred_countries: List[str]
+    min_lead_score: float
+    scoring_weights: Dict[str, float]
+    target_market_rules: Dict[str, Any]
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class CRMFeedbackLogCreate(BaseModel):
+    company_id: uuid.UUID
+    action_taken: str
+    previous_stage: Optional[str] = None
+    new_stage: Optional[str] = None
+    previous_score: Optional[float] = None
+    new_score: Optional[float] = None
+    feedback_reason: Optional[str] = None
+    actor: Optional[str] = "human_reviewer"
+
+
+class CRMFeedbackLogResponse(BaseModel):
+    id: uuid.UUID
+    company_id: uuid.UUID
+    action_taken: str
+    previous_stage: Optional[str] = None
+    new_stage: Optional[str] = None
+    previous_score: Optional[float] = None
+    new_score: Optional[float] = None
+    feedback_reason: Optional[str] = None
+    actor: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ==========================================
+# 10. AI Research & Intelligence Assistant Schemas
+# ==========================================
+
+class CRMAIResearchResponse(BaseModel):
+    id: uuid.UUID
+    company_id: uuid.UUID
+    executive_summary: Optional[str] = None
+    target_market: Optional[str] = None
+    value_proposition: Optional[str] = None
+    seo_weaknesses: List[Dict[str, Any]] = Field(default_factory=list)
+    backlink_opportunities: List[Dict[str, Any]] = Field(default_factory=list)
+    recommended_services: List[str] = Field(default_factory=list)
+    growth_opportunities: List[str] = Field(default_factory=list)
+    tech_stack_detected: List[str] = Field(default_factory=list)
+    confidence_score: float
+    model_used: str
+    analyzed_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AIAssistantQueryRequest(BaseModel):
+    query: str
+    context_filters: Optional[Dict[str, Any]] = None
+
+
+class AIAssistantQueryResponse(BaseModel):
+    answer: str
+    suggested_actions: List[Dict[str, Any]] = Field(default_factory=list)
+    matched_leads: List[Dict[str, Any]] = Field(default_factory=list)
+    sql_or_filter_used: Optional[str] = None
+    confidence: float = 0.95
+

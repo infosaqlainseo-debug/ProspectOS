@@ -417,7 +417,7 @@ async def report_delivery_job(ctx, job_id: str, report_id: str, recipient_email:
     from app.models import PortalUser
     from sqlalchemy import select
     async with async_session_maker() as session:
-        stmt = select(PortalUser).where(PortalUser.role == "ADMIN").limit(1)
+        stmt = select(PortalUser).where(PortalUser.role.in_(["ADMIN", "SUPER_ADMIN"])).limit(1)
         admin_user = (await session.execute(stmt)).scalar_one_or_none()
         if not admin_user:
             admin_user = PortalUser(id=uuid.uuid4(), email="system@prospectos.local", role="ADMIN", full_name="System Automation", is_active=True)
@@ -434,6 +434,115 @@ async def database_backup_job(ctx):
     entry = manager.create_backup(retention_days=14)
     logger.info(f"Database backup completed successfully: {entry['filename']} ({entry['size_mb']} MB)")
     return entry
+
+
+async def scraper_cloud_execution_job(ctx, task_id: str, run_id: str):
+    """Executes a cloud scraping extraction job in the background."""
+    logger.info(f"Executing scraper_cloud_execution_job for task {task_id}, run {run_id}")
+    import uuid
+    from datetime import datetime, timezone
+    from sqlalchemy import select
+    from app.models.scraper import ScraperTask, ScraperTaskRun, ExtractedRecord
+    from app.services.scraper.engine import ScraperEngine
+
+    async with async_session_maker() as session:
+        task = await session.get(ScraperTask, uuid.UUID(task_id))
+        run = await session.get(ScraperTaskRun, uuid.UUID(run_id))
+        if not task or not run:
+            logger.error(f"Task {task_id} or Run {run_id} not found.")
+            return
+
+        run.status = "RUNNING"
+        run.started_at = datetime.now(timezone.utc)
+        task.status = "RUNNING"
+        task.last_run_at = datetime.now(timezone.utc)
+        await session.commit()
+
+        engine = ScraperEngine()
+        try:
+            start_url = task.target_url or task.workflow_config.get("start_url") or "https://example.com"
+            result = await engine.execute_workflow(
+                start_url=start_url,
+                workflow_config=task.workflow_config,
+                max_records=task.workflow_config.get("max_records", 50),
+                max_pages=task.workflow_config.get("max_pages", 3)
+            )
+
+            records = result.get("records") or []
+            saved_count = 0
+            dup_count = 0
+            for r in records:
+                existing_res = await session.execute(
+                    select(ExtractedRecord).where(
+                        ExtractedRecord.task_id == task.id,
+                        ExtractedRecord.record_hash == r["record_hash"]
+                    )
+                )
+                if existing_res.scalar_one_or_none():
+                    dup_count += 1
+                    r["is_duplicate"] = True
+                else:
+                    new_rec = ExtractedRecord(
+                        task_id=task.id,
+                        run_id=run.id,
+                        record_hash=r["record_hash"],
+                        raw_data=r.get("raw_data", {}),
+                        cleaned_data=r.get("cleaned_data", {}),
+                        company_name=r.get("company_name"),
+                        website=r.get("website"),
+                        domain=r.get("domain"),
+                        industry=r.get("industry"),
+                        category=r.get("category"),
+                        country=r.get("country"),
+                        city=r.get("city"),
+                        email=r.get("email"),
+                        phone=r.get("phone"),
+                        address=r.get("address"),
+                        description=r.get("description"),
+                        social_profiles=r.get("social_profiles"),
+                        source_url=r.get("source_url"),
+                        discovery_source=r.get("discovery_source", "SCRAPER"),
+                        validation_status=r.get("validation_status", "VALID"),
+                        quality_score=r.get("quality_score", 100.0),
+                        quality_status=r.get("quality_status", "HIGH"),
+                        validation_details=r.get("validation_details"),
+                        is_duplicate=r.get("is_duplicate", False)
+                    )
+                    session.add(new_rec)
+                    saved_count += 1
+
+            run.status = "COMPLETED"
+            run.completed_at = datetime.now(timezone.utc)
+            run.duration_seconds = result.get("duration_seconds", 0.0)
+            run.records_extracted = len(records)
+            run.records_saved = saved_count
+            run.records_duplicate = dup_count
+            run.logs = result.get("logs") or []
+
+            task.status = "COMPLETED"
+            task.total_records += saved_count
+            task.successful_records += saved_count
+            task.duplicate_records += dup_count
+            task.last_error = None
+            await session.commit()
+            logger.info(f"Scraper task {task_id} completed successfully ({saved_count} records saved).")
+        except Exception as e:
+            logger.error(f"Scraper task {task_id} failed: {e}", exc_info=True)
+            run.status = "FAILED"
+            run.error_message = str(e)
+            run.completed_at = datetime.now(timezone.utc)
+            task.status = "FAILED"
+            task.last_error = str(e)
+            await session.commit()
+
+
+async def scraper_scheduler_tick(ctx):
+    """Evaluates recurring scraper schedules and triggers due extraction jobs."""
+    from app.services.scraper.scheduler import check_and_trigger_scheduled_tasks
+    async with async_session_maker() as session:
+        triggered = await check_and_trigger_scheduled_tasks(session)
+        if triggered > 0:
+            logger.info(f"Scraper scheduler tick triggered {triggered} tasks.")
 
 
 from arq import cron
@@ -460,12 +569,16 @@ class WorkerSettings:
         report_delivery_job,
         database_backup_job,
         google_drive_sync_job,
+        scraper_cloud_execution_job,
+        scraper_scheduler_tick,
     ]
     cron_jobs = [
         cron(workflow_scheduler_tick, minute=None, second=0),
+        cron(scraper_scheduler_tick, minute=None, second=30),
         cron(database_backup_job, hour=2, minute=0),
     ]
     redis_settings = RedisSettings.from_dsn(settings.REDIS_URL)
     on_startup = None
     on_shutdown = None
+
 

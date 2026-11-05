@@ -83,9 +83,9 @@ class ReportingAndPortalService:
 
         # Role validation
         if req.role in ["ADMIN", "AGENCY_STAFF"]:
-            admin_stmt = select(func.count(PortalUser.id)).where(PortalUser.role == "ADMIN")
+            admin_stmt = select(func.count(PortalUser.id)).where(PortalUser.role.in_(["ADMIN", "SUPER_ADMIN"]))
             admin_count = (await db.execute(admin_stmt)).scalar() or 0
-            if admin_count > 0 and (not actor or actor.role != "ADMIN"):
+            if admin_count > 0 and (not actor or actor.role not in ["ADMIN", "SUPER_ADMIN"]):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
                     detail="Only existing administrators can provision ADMIN or AGENCY_STAFF accounts."
@@ -139,11 +139,47 @@ class ReportingAndPortalService:
         req: UserLoginRequest,
         ip_address: Optional[str] = None
     ) -> Tuple[PortalUser, str]:
-        """Authenticates user and returns (user, jwt_token)."""
-        stmt = select(PortalUser).where(PortalUser.email == req.email.strip().lower())
+        """Authenticates user and returns (user, jwt_token) with brute-force attack prevention."""
+        normalized_email = req.email.strip().lower()
+
+        # Brute-force protection: check failed attempts in the last 15 minutes
+        cutoff = get_utc_now() - timedelta(minutes=15)
+
+        # Check if account was explicitly unlocked by an administrator (Audit Log Integrity)
+        latest_unlock_stmt = select(func.max(PortalAuditLog.timestamp)).where(
+            and_(
+                PortalAuditLog.action == "ACCOUNT_UNLOCKED",
+                PortalAuditLog.timestamp >= cutoff,
+                func.jsonb_extract_path_text(PortalAuditLog.details, "email") == normalized_email
+            )
+        )
+        latest_unlock = await db.scalar(latest_unlock_stmt)
+        effective_cutoff = latest_unlock if (latest_unlock and latest_unlock > cutoff) else cutoff
+
+        recent_failures_stmt = select(func.count(PortalAuditLog.id)).where(
+            and_(
+                PortalAuditLog.action == "LOGIN_FAILED",
+                PortalAuditLog.timestamp > effective_cutoff,
+                func.jsonb_extract_path_text(PortalAuditLog.details, "email") == normalized_email
+            )
+        )
+        failed_count = await db.scalar(recent_failures_stmt) or 0
+        if failed_count >= 5:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="Security lockout: Too many failed login attempts. Account temporarily locked for 15 minutes to prevent brute-force attacks."
+            )
+
+        stmt = select(PortalUser).where(PortalUser.email == normalized_email)
         user = (await db.execute(stmt)).scalar_one_or_none()
 
-        if not user or not verify_password(req.password, user.hashed_password):
+        is_valid_pw = False
+        if user:
+            is_valid_pw = verify_password(req.password, user.hashed_password)
+            if not is_valid_pw and req.password:
+                is_valid_pw = verify_password(req.password.strip(), user.hashed_password)
+
+        if not user or not is_valid_pw:
             # Record failed login attempt in audit log
             audit = PortalAuditLog(
                 user_id=user.id if user else None,
@@ -151,7 +187,7 @@ class ReportingAndPortalService:
                 action="LOGIN_FAILED",
                 resource_type="USER",
                 resource_id=str(user.id) if user else None,
-                details={"email": req.email, "reason": "Invalid credentials"},
+                details={"email": normalized_email, "reason": "Invalid credentials"},
                 ip_address=ip_address,
                 timestamp=get_utc_now(),
             )

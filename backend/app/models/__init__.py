@@ -54,6 +54,26 @@ class Company(Base):
     lead_owner: Mapped[str | None] = mapped_column(String, nullable=True)
     next_followup_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
+    # Lead Source & Scraper Linkage
+    lead_source: Mapped[str | None] = mapped_column(String, default="SCRAPER", nullable=True) # SCRAPER, MANUAL, CSV_IMPORT, API
+    source_task_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True), ForeignKey("scraper_tasks.id", ondelete="SET NULL"), nullable=True)
+    tags: Mapped[list | None] = mapped_column(JSONB, default=list, nullable=True)
+    custom_fields: Mapped[dict | None] = mapped_column(JSONB, default=dict, nullable=True)
+
+    # Enriched Contact & Company Intelligence
+    company_size: Mapped[str | None] = mapped_column(String, nullable=True)
+    contact_person: Mapped[str | None] = mapped_column(String, nullable=True)
+    contact_title: Mapped[str | None] = mapped_column(String, nullable=True)
+    linkedin_url: Mapped[str | None] = mapped_column(String, nullable=True)
+
+    # SEO & Domain Intelligence
+    domain_rating: Mapped[float | None] = mapped_column(Float, nullable=True)
+    domain_authority: Mapped[float | None] = mapped_column(Float, nullable=True)
+    organic_traffic: Mapped[float | None] = mapped_column(Float, nullable=True)
+    website_status: Mapped[str | None] = mapped_column(String, default="ACTIVE", nullable=True)
+    technology_stack: Mapped[list | None] = mapped_column(JSONB, default=list, nullable=True)
+    data_verification_status: Mapped[str | None] = mapped_column(String, default="VERIFIED", nullable=True)
+
     first_discovered_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now)
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     last_verified_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -1093,5 +1113,36 @@ class SocialMessageLog(Base):
     error_details: Mapped[str | None] = mapped_column(Text, nullable=True)
     explicit_user_confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=get_utc_now, index=True)
+
+# Import ProspectOS Scraper models
+from app.models.scraper import (
+    ScraperTask,
+    ScraperTaskRun,
+    ExtractedRecord,
+    ExportJob,
+    ScraperApiKey,
+)
+
+# Import ProspectOS CRM models
+from app.models.crm import (
+    CRMLeadSegment,
+    CRMSegmentMember,
+    CRMUserPreference,
+    CRMFeedbackLog,
+    CRMAIResearch,
+    CRMCustomField,
+)
+
+# Import ProspectOS Super Admin & SEO models
+from app.models.admin import (
+    PlatformSetting,
+    RolePermission,
+    SEOGlobalConfig,
+    SEOPublicPage,
+    AIProviderSetting,
+)
+
+
+
 
 

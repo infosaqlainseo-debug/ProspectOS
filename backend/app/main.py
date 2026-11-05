@@ -1,4 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException
+from contextlib import asynccontextmanager
+import logging
+from fastapi import FastAPI, Depends, HTTPException, Response
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text, select, func
@@ -8,12 +10,25 @@ from urllib.parse import urlparse
 import uuid
 
 from app.core.config import settings
-from app.db.session import get_db
+from app.db.session import get_db, async_session_maker
 from app.models import Job
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.redis import get_redis_settings
-from app.api import discovery, analysis, enrichment, ai, companies, opportunity, workflows, publishers, matching, media_plan, outreach, crm, sales_intelligence, publisher_quality, analytics, competitive, portal, system, gdrive, social
-app = FastAPI(title="ProspectOS API", version="1.5.0")
+from app.api import discovery, analysis, enrichment, ai, companies, opportunity, workflows, publishers, matching, media_plan, outreach, crm, sales_intelligence, publisher_quality, analytics, competitive, portal, system, gdrive, social, scraper, admin
+from app.services.seo.seo_service import SEOService
+from app.services.admin.bootstrap import bootstrap_super_admin
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: execute secure Super Admin bootstrap
+    try:
+        async with async_session_maker() as session:
+            await bootstrap_super_admin(session)
+    except Exception as e:
+        logging.getLogger("uvicorn.error").error(f"Failed to bootstrap Super Admin: {e}")
+    yield
+
+app = FastAPI(title="ProspectOS API", version="2.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,7 +40,7 @@ app.add_middleware(
         "https://prospectos.grokxseo.online",
         "http://prospectos.grokxseo.online"
     ],
-    allow_origin_regex=r"^https?://.*\.grokxseo\.online$",
+    allow_origin_regex=r"^https?://.*(\.grokxseo\.online|\.trycloudflare\.com)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,6 +66,25 @@ app.include_router(competitive.router)
 app.include_router(portal.router)
 app.include_router(gdrive.router)
 app.include_router(social.router)
+app.include_router(scraper.router, prefix="/api")
+app.include_router(scraper.router)
+app.include_router(admin.router)
+
+
+@app.get("/sitemap.xml")
+async def get_root_sitemap_xml(db: AsyncSession = Depends(get_db)):
+    seo_svc = SEOService(db)
+    content = await seo_svc.generate_sitemap_xml()
+    return Response(content=content, media_type="application/xml")
+
+
+@app.get("/robots.txt")
+async def get_root_robots_txt(db: AsyncSession = Depends(get_db)):
+    seo_svc = SEOService(db)
+    content = await seo_svc.generate_robots_txt()
+    return Response(content=content, media_type="text/plain")
+
+
 
 @app.get("/health")
 async def health_check():

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/sidebar";
+import { AppShell } from "@/components/layout/app-shell";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,25 +13,23 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
 export const metadata: Metadata = {
-  title: "ProspectOS | Intelligence Dashboard",
-  description: "AI Agentic Data Intelligence Platform",
+  title: "ProspectOS | AI Web Scraping & Lead Intelligence Platform",
+  description: "Enterprise web data extraction, autonomous prospect discovery, and AI-powered CRM intelligence.",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased bg-gray-50`}
-    >
-      <body className="min-h-full flex flex-col">
-        <Sidebar />
-        <div className="pl-64 flex flex-col h-full min-h-screen">
-          <main className="flex-1 p-8 overflow-auto">
-            {children}
-          </main>
-        </div>
+    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 font-sans">
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

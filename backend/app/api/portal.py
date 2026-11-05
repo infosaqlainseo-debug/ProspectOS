@@ -1,10 +1,13 @@
 import uuid
-from typing import List, Optional
+import hashlib
+from datetime import datetime, timezone
+from typing import List, Optional, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, desc
 
 from app.db.session import get_db
+from app.core.redis import get_redis
 from app.models import (
     Company,
     PortalUser,
@@ -128,6 +131,35 @@ async def get_me(
         last_login_at=current_user.last_login_at,
         created_at=current_user.created_at,
     )
+
+
+@router.post("/auth/logout")
+async def logout(
+    request: Request,
+    current_user: PortalUser = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+    redis_client: Optional[Any] = Depends(get_redis)
+):
+    """Revokes the current JWT bearer token and logs the user out."""
+    auth_header = request.headers.get("Authorization")
+    if auth_header and auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1].strip()
+        if redis_client and token:
+            token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+            await redis_client.setex(f"revoked_token:{token_hash}", 86400, "revoked")
+
+    audit = PortalAuditLog(
+        user_id=current_user.id,
+        company_id=current_user.company_id,
+        action="LOGOUT",
+        resource_type="USER",
+        resource_id=str(current_user.id),
+        details={"email": current_user.email, "message": "User session revoked via logout"},
+        timestamp=datetime.now(timezone.utc)
+    )
+    db.add(audit)
+    await db.commit()
+    return {"message": "Successfully logged out. Session revoked."}
 
 
 # =========================================================================

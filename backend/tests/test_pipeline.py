@@ -55,13 +55,13 @@ async def test_discovery_pipeline(mock_http_validate):
         # Check DB
         companies = (await db_session.execute(select(Company))).scalars().all()
         # Find companies matching Company A and Company B
-        names = [c.company_name for c in companies]
+        names = [c.company_name for c in companies if c.company_name]
         assert any(n.startswith("Company A") for n in names)
         assert any(n.startswith("Company B") for n in names)
 
         domains = (await db_session.execute(select(Domain))).scalars().all()
         # Ensure we have domains for those companies
-        domain_names = [d.domain for d in domains]
+        domain_names = [d.domain for d in domains if d.domain]
         assert any("companya-" in d for d in domain_names)
         assert any("companyb-" in d for d in domain_names)
         

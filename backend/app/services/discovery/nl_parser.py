@@ -163,7 +163,6 @@ Do not include markdown fences or explanations outside the JSON."""
             resp = await client.messages.create(
                 model=settings.ANTHROPIC_MODEL,
                 max_tokens=600,
-                temperature=0.0,
                 system=system_prompt,
                 messages=[{"role": "user", "content": user_message}]
             )

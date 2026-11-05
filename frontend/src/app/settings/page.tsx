@@ -407,6 +407,94 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* 5.5 Scraper Engine Platform Settings */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-5">
+        <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+          <div>
+            <h2 className="text-base font-bold text-slate-900 flex items-center">
+              <Sparkles className="w-5 h-5 mr-2 text-indigo-600" /> Scraper Engine & Discovery Settings
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Configure scraping timeouts, rate limits, robots.txt compliance, and authorized source adapters.
+            </p>
+          </div>
+          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
+            ENGINE ONLINE (v1.5.0)
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">SSRF Security Filter</span>
+            <div className="font-bold text-slate-900 text-sm">Strictly Enforced</div>
+            <p className="text-slate-500 text-[11px]">
+              Blocks 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, and cloud metadata (169.254.169.254).
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Polite Crawl Delay</span>
+            <div className="font-bold text-slate-900 text-sm">800 ms / Request</div>
+            <p className="text-slate-500 text-[11px]">
+              Rate-limiting delay between page fetches to respect target site bandwidth and avoid blocks.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Robots.txt Directive</span>
+            <div className="font-bold text-emerald-700 text-sm">Compliant</div>
+            <p className="text-slate-500 text-[11px]">
+              Checks robots.txt rules prior to extraction to adhere to site policies.
+            </p>
+          </div>
+        </div>
+
+        <div className="pt-2">
+          <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block mb-2">Discovery Source Adapters</span>
+          <div className="border border-slate-200 rounded-xl divide-y divide-slate-100 text-xs">
+            <div className="p-3 flex items-center justify-between">
+              <div>
+                <span className="font-bold text-slate-800">Business Directory Adapter</span>
+                <p className="text-[11px] text-slate-500">Commercial directory catalogs and public listings</p>
+              </div>
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                ACTIVE
+              </span>
+            </div>
+
+            <div className="p-3 flex items-center justify-between">
+              <div>
+                <span className="font-bold text-slate-800">DuckDuckGo Public Search Engine</span>
+                <p className="text-[11px] text-slate-500">Keyword-based company and website discovery (No API key required)</p>
+              </div>
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                ACTIVE
+              </span>
+            </div>
+
+            <div className="p-3 flex items-center justify-between">
+              <div>
+                <span className="font-bold text-slate-800">Google Search / SerpAPI / Custom Search API</span>
+                <p className="text-[11px] text-slate-500">High-volume authorized SERP extraction (Configure SERPAPI_KEY in .env)</p>
+              </div>
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600">
+                CONFIGURABLE
+              </span>
+            </div>
+
+            <div className="p-3 flex items-center justify-between">
+              <div>
+                <span className="font-bold text-slate-800">Anthropic Claude AI Assistant</span>
+                <p className="text-[11px] text-slate-500">Intelligent selector generation and natural language prompt parsing</p>
+              </div>
+              <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                CONFIGURED
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 6. Security Audit Trail (Multi-Tenant & Role Access) */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4">
         <div className="flex justify-between items-center">

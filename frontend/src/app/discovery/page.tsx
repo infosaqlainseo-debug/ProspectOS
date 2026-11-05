@@ -248,29 +248,29 @@ export default function DiscoveryPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-16 px-4 sm:px-6">
+    <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-5">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200/80 pb-5">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-0.5 text-xs font-bold bg-blue-100 text-blue-800 rounded">Module A</span>
-            <span className="px-2 py-0.5 text-xs font-bold bg-purple-100 text-purple-800 rounded">AI Scraping Engine</span>
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="px-2 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-700 rounded border border-slate-200/60">Module A</span>
+            <span className="px-2 py-0.5 text-[11px] font-medium bg-slate-100 text-slate-700 rounded border border-slate-200/60">Discovery Engine</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 flex items-center mt-1">
-            <Search className="w-7 h-7 mr-3 text-blue-600" /> Lead Discovery & Scraping Suite
+          <h1 className="text-xl font-semibold tracking-tight text-slate-900 flex items-center gap-2">
+            <Search className="w-5 h-5 text-blue-600" /> Lead Discovery &amp; Scraping Suite
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 mt-0.5">
             Autonomous multi-source lead scraping, live SEO analysis, CRM persistence, and Google Drive synchronization for GrokxSEO.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex flex-wrap rounded-lg bg-slate-100 p-1 border border-slate-200">
+        <div className="flex flex-wrap rounded-lg bg-slate-100/80 p-1 border border-slate-200/80">
           <button
             onClick={() => setActiveTab("nl_search")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition flex items-center gap-1.5 ${
               activeTab === "nl_search"
-                ? "bg-white text-blue-700 shadow-sm"
+                ? "bg-white text-blue-700 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -278,9 +278,9 @@ export default function DiscoveryPage() {
           </button>
           <button
             onClick={() => setActiveTab("templates")}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition flex items-center gap-1.5 ${
               activeTab === "templates"
-                ? "bg-white text-blue-700 shadow-sm"
+                ? "bg-white text-blue-700 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -291,9 +291,9 @@ export default function DiscoveryPage() {
               setActiveTab("jobs");
               loadJobs();
             }}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md transition flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 text-xs font-medium rounded-md transition flex items-center gap-1.5 ${
               activeTab === "jobs"
-                ? "bg-white text-blue-700 shadow-sm"
+                ? "bg-white text-blue-700 shadow-[0_1px_2px_rgba(15,23,42,0.04)]"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >

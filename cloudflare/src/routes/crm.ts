@@ -203,7 +203,11 @@ crmRouter.post("/assistant/chat", async (c) => {
     response: result.content,
     provider_used: result.provider,
     model_used: result.model,
+    is_ai_generated: result.isAiGenerated,
     cost_usd: result.costUsd,
+    tokens_used: result.tokensUsed,
+    quota_status: result.quotaStatus,
+    status_note: result.statusNote,
     fallback_occurred: result.fallbackOccurred,
   });
 });

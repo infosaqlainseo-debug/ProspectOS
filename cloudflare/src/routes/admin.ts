@@ -34,8 +34,8 @@ adminRouter.get("/overview", async (c) => {
       serverless_worker_status: "ONLINE",
       storage_engine: "Cloudflare R2 (Zero Egress)",
       ai_providers: [
-        `Anthropic Claude (${c.env.ANTHROPIC_ENABLED === "true" ? "ACTIVE_BUDGET_APPROVED" : "BUDGET_GATED_STRICT_ZERO_COST"})`,
-        `Google Gemini (${c.env.GEMINI_API_KEY ? "CONNECTED_FREE_TIER" : "LOCAL_HEURISTIC_SAFE_MODE"})`,
+        `Google Gemini 3.8 Flash (${c.env.GEMINI_API_KEY ? "CONNECTED_FREE_TIER" : "KEY_PENDING_HEURISTIC_SAFE_MODE"})`,
+        `Anthropic Claude 3.5 (${c.env.ANTHROPIC_ENABLED === "true" ? "ACTIVE_BUDGET_APPROVED" : "BUDGET_GATED_STRICT_ZERO_COST"})`,
         "Workers AI (Free Neurons)",
       ],
     },
@@ -102,7 +102,7 @@ adminRouter.get("/ai-control", async (c) => {
 });
 
 adminRouter.post("/ai-control/test-connection", async (c) => {
-  const providerParam = c.req.query("provider_name") || "groq";
+  const providerParam = c.req.query("provider_name") || "gemini";
   const ai = new UnifiedAIProvider(c.env);
   const result = await ai.complete({
     prompt: "Respond with 'CONNECTION_VERIFIED' to confirm status.",
@@ -114,7 +114,10 @@ adminRouter.post("/ai-control/test-connection", async (c) => {
     success: true,
     provider: result.provider,
     model: result.model,
+    is_ai_generated: result.isAiGenerated,
     cost_usd: result.costUsd,
+    quota_status: result.quotaStatus,
+    status_note: result.statusNote,
     response: result.content,
   });
 });

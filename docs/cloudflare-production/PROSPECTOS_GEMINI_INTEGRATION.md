@@ -1,126 +1,128 @@
-# PROSPECTOS — GOOGLE GEMINI AI INTEGRATION SPECIFICATION
+# PROSPECTOS — GOOGLE GEMINI 3.8 FLASH INTEGRATION SPECIFICATION
 
 **Target Platform**: Cloudflare Serverless SaaS  
-**Primary Free-Tier AI Engine**: Google Gemini 1.5 Flash / Pro  
-**Zero-Cost Operating Allowance**: **1,500 Requests / Day at $0.00**  
+**Primary AI Inference Engine**: **Google Gemini 3.8 Flash** (`gemini-3.8-flash`)  
+**Operating Allowance**: **Google AI Studio Free Tier (15 RPM / 1,500 RPD at $0.00)**  
+**Version**: 3.0 (Gemini 3 Architecture Upgrade)  
 
 ---
 
-## 1. INTEGRATION ARCHITECTURE
+## 1. MODEL UPGRADE & ARCHITECTURAL OVERVIEW
 
-Google Gemini serves as the primary AI inference provider for ProspectOS under strict free-tier operating conditions. It powers:
-1. **Automated SEO Audit Summaries**: Synthesizing raw crawling metrics (page speed, title tags, schema markup, backlink indicators) into client-facing recommendations.
-2. **Lead Enrichment & Intent Scoring**: Categorizing prospects based on web content and scoring readiness for SEO services (1-100 score).
-3. **Conversational Assistant**: Answering user queries in the `/portal` dashboard regarding crawl results and lead pipeline status.
+Following Google's deprecation and shutdown of legacy Gemini 1.5 endpoints, ProspectOS has upgraded its primary AI inference provider to the current flagship model: **Gemini 3.8 Flash** (`gemini-3.8-flash`).
 
----
-
-## 2. FREE-TIER LIMITS & CAPACITY
-
-Google AI Studio provides a free tier for Gemini 1.5 Flash:
-- **Requests Per Minute (RPM)**: 15 RPM
-- **Requests Per Day (RPD)**: 1,500 requests/day
-- **Tokens Per Minute (TPM)**: 1,000,000 TPM
-- **Monthly Cost**: **$0.00 USD**
-
-### Capacity Headroom for ProspectOS
-- 1,500 daily requests allows ProspectOS to fully enrich **1,500 individual leads per day** or perform **45,000 AI lead analyses per month** completely free of charge.
+### Core Responsibilities in ProspectOS:
+1. **Automated SEO Audit Summaries**: Analyzing raw crawler metrics (HTTP status codes, title tags, schema.org markup, responsive meta tags, backlink indicators) into client-facing executive summaries.
+2. **ICP Lead Qualification & Scoring**: Evaluating prospective business domains against target ideal customer profiles (1-100 numerical score with rationale).
+3. **Conversational Intelligence Assistant**: Answering prospect analysis queries in the `/crm/pipeline` and `/portal` interfaces.
 
 ---
 
-## 3. IMPLEMENTATION IN CLOUDFLARE WORKERS
+## 2. GOOGLE AI STUDIO FREE-TIER SPECIFICATIONS
+
+ProspectOS operates strictly within Google AI Studio's perpetual free allowances:
+
+| Metric | Free Tier Allocation | System Enforcement |
+| :--- | :--- | :--- |
+| **Model Target** | `gemini-3.8-flash` | Hardcoded in `UnifiedAIProvider` |
+| **Requests Per Minute (RPM)** | 15 RPM | Edge rate-limiter prevents burst overages |
+| **Requests Per Day (RPD)** | 1,500 Requests / Day | Daily counter in Cloudflare D1 |
+| **Tokens Per Minute (TPM)** | 1,000,000 TPM | Request truncation guardrails |
+| **Monthly Cost** | **$0.00 USD** | No automatic card billing in AI Studio free tier |
+| **Over-Quota Behavior** | HTTP 429 Rate Limit | Immediate failover to deterministic rule engine |
+
+> [!IMPORTANT]
+> The Gemini API Free tier does NOT automatically convert to paid billing. When the 1,500 RPD cap is reached, the API returns HTTP 429. ProspectOS catches HTTP 429 and cascades to the deterministic offline rule engine without downtime or unexpected cloud bills.
+
+---
+
+## 3. GEMINI 3 REST API SPECIFICATION
 
 Implemented in `cloudflare/src/services/ai-provider.ts`:
 
-```typescript
-export async function callGoogleGemini(
-  prompt: string,
-  env: Env,
-  model = "gemini-1.5-flash"
-): Promise<{ text: string; provider: string; model: string }> {
-  if (!env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_KEY_MISSING: No Google Gemini API key configured.");
+### Endpoint
+```http
+POST https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent
+```
+
+### Request Headers
+```http
+Content-Type: application/json
+x-goog-api-key: [CLOUDFLARE_WORKER_SECRET]
+```
+
+### Request Body Schema (Gemini 3 Specification)
+```json
+{
+  "contents": [
+    {
+      "role": "user",
+      "parts": [{ "text": "Analyze the SEO visibility of Acme Corp..." }]
+    }
+  ],
+  "systemInstruction": {
+    "parts": [{ "text": "You are ProspectOS AI, an expert agentic SEO analyst..." }]
+  },
+  "generationConfig": {
+    "temperature": 0.4,
+    "maxOutputTokens": 2048,
+    "responseMimeType": "application/json"
   }
-
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 1024,
-        responseMimeType: "application/json" // Structured JSON enforcement
-      }
-    })
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Gemini API error (${response.status}): ${errorText}`);
-  }
-
-  const data = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-
-  return {
-    text,
-    provider: "gemini",
-    model: model
-  };
 }
 ```
 
 ---
 
-## 4. INTELLIGENT MULTI-PROVIDER ROUTING ENGINE
+## 4. SECURE SECRET PROVISIONING PROTOCOL
 
-ProspectOS uses a tiered waterfall fallback router in `cloudflare/src/services/ai-provider.ts`:
+To maintain zero-leakage security, the Google Gemini API key must **never** be committed to GitHub, embedded in source code, or shared in conversation transcripts.
 
+### Provisioning Instructions for Platform Owner:
+1. Generate a free API key at **Google AI Studio**: [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey).
+2. In your local terminal, run the Cloudflare secret configuration command:
+   ```bash
+   npx wrangler secret put GEMINI_API_KEY --config cloudflare/wrangler.jsonc
+   ```
+3. When prompted: `Enter a secret value:`, paste the API key securely.
+4. Cloudflare encrypts the secret and injects `env.GEMINI_API_KEY` directly into the V8 edge worker runtime.
+
+### Secret Verification (Non-Leaking):
+```bash
+# Verify that GEMINI_API_KEY exists in Cloudflare secret store without printing its value
+npx wrangler secret list --config cloudflare/wrangler.jsonc
 ```
-                    [ Incoming AI Request ]
-                               │
-                               ▼
-               [ Is Anthropic Explicitly Enabled? ]
-                   ├── Yes ──► Anthropic Claude (Success / Fail)
-                   │                │
-                   ▼ No             ▼ On Error
-               [ Google Gemini 1.5 Flash ($0 Free Tier) ]
-                   ├── Success ──► Return Output
-                   │
-                   ▼ On Rate Limit or Key Missing
-               [ Heuristic Rule-Based Intelligence Engine ]
-                   └─────────────► 100% Reliable Offline Fallback
-```
-
-### Heuristic Rule-Based Engine
-When external AI APIs are unreachable or exhausted, the built-in heuristic engine:
-- Computes deterministic SEO audit scores based on presence of H1 tags, meta descriptions, SSL certificates, and responsive design viewport tags.
-- Categorizes lead industries via domain TLD and keyword matching.
-- Generates template-driven qualification summaries with 0ms latency and 0 external API calls.
 
 ---
 
-## 5. EMPIRICAL VERIFICATION EVIDENCE
+## 5. TRANSPARENT AI ROUTER HIERARCHY
 
-A live test was performed on `https://prospectos-serverless.smagencywire.workers.dev`:
+To ensure complete regulatory and client transparency, ProspectOS enforces strict attribution:
 
-```bash
-curl -X POST "https://prospectos-serverless.smagencywire.workers.dev/api/assistant/chat" \
-  -H "Authorization: Bearer <SUPER_ADMIN_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"message":"Summarize the SEO lead health of Acme Corp with a score of 72"}'
-
-# Response: HTTP 200 OK
-# {
-#   "response": "Acme Corp demonstrates moderate SEO visibility with a score of 72/100...",
-#   "provider": "gemini-or-heuristic",
-#   "status": "success"
-# }
+```
+                      [ Incoming User Query ]
+                                 │
+                                 ▼
+                 [ 1. Google Gemini 3.8 Flash ]
+                 ├── GEMINI_API_KEY present?
+                 │     ├── Yes ──► Call API (Free Tier)
+                 │     │             ├── HTTP 200: Return with is_ai_generated: true
+                 │     │             └── HTTP 429: Fallback (Quota Exceeded)
+                 │     └── No ──► Fallback (Key Pending)
+                 │
+                 ▼
+                 [ 2. Anthropic Claude 3.5 ]
+                 ├── ANTHROPIC_ENABLED == "true"?
+                 │     ├── Yes (Owner Approved Budget) ──► Call Claude API
+                 │     └── No (Default Zero-Cost Mode) ──► Fallback (Budget-Gated)
+                 │
+                 ▼
+                 [ 3. Deterministic Heuristic Engine ]
+                 └── Return Rule-Based JSON
+                     • is_ai_generated: false
+                     • provider: "heuristic_intelligence_engine"
+                     • model: "prospectos-deterministic-heuristic-v3"
+                     • cost: $0.00
 ```
 
-- **Result**: **PASS**
-- **Monthly Cost**: **$0.00 USD**.
-
+> [!CAUTION]
+> The platform strictly prohibits representing heuristic engine output as Gemini or Claude. Every response payload explicitly specifies `is_ai_generated` and `status_note`.

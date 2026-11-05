@@ -33,7 +33,11 @@ adminRouter.get("/overview", async (c) => {
       database_status: "HEALTHY",
       serverless_worker_status: "ONLINE",
       storage_engine: "Cloudflare R2 (Zero Egress)",
-      ai_providers: ["Groq (Free)", "Gemini (Free)", "Workers AI (Free)"],
+      ai_providers: [
+        `Anthropic Claude (${c.env.ANTHROPIC_ENABLED === "true" ? "ACTIVE_BUDGET_APPROVED" : "BUDGET_GATED_STRICT_ZERO_COST"})`,
+        `Google Gemini (${c.env.GEMINI_API_KEY ? "CONNECTED_FREE_TIER" : "LOCAL_HEURISTIC_SAFE_MODE"})`,
+        "Workers AI (Free Neurons)",
+      ],
     },
     timestamp: new Date().toISOString(),
   });

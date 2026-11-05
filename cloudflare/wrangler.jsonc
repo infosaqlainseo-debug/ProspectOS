@@ -1,20 +1,27 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "prospectos-serverless",
+  "account_id": "a22069ef8b16015f16b74b9afe65f557",
   "main": "src/index.ts",
   "compatibility_date": "2024-11-01",
   "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "../frontend/out",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "single-page-application"
+  },
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "prospectos-staging-d1",
-      "database_id": "7155ca1d-72c7-4097-a361-7f1ca8e57eb6"
+      "database_name": "prospectos-production-d1",
+      "database_id": "62d68ef1-ed9d-47bf-b90a-8a26f2cfabe0"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "a737a3e399514847853b0afbdc70d9b6"
+      "id": "bb54a9e9dfdb4c1b979a9633c9256817"
     }
   ],
   "ai": {
@@ -23,9 +30,9 @@
   "vars": {
     "ENVIRONMENT": "production",
     "TARGET_MONTHLY_COST": "$0.00 USD",
-    "GROQ_API_URL": "https://api.groq.com/openai/v1/chat/completions",
+    "ANTHROPIC_API_URL": "https://api.anthropic.com/v1/messages",
     "GEMINI_API_URL": "https://generativelanguage.googleapis.com/v1beta",
+    "GROQ_API_URL": "https://api.groq.com/openai/v1/chat/completions",
     "JWT_SECRET": "prospectos-cf-zero-cost-master-secret-2026"
   }
 }
-

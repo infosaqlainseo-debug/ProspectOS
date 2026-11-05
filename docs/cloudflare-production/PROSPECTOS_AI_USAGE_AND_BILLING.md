@@ -24,7 +24,7 @@ To provide complete accounting clarity, hosting infrastructure costs and AI infe
 ### B. AI Inference Infrastructure
 | Provider & Model | Tier / Authorization Status | Free Allowance | Incurred Cost |
 | :--- | :--- | :--- | :---: |
-| **Google Gemini 3.8 Flash** | Google AI Studio Free Tier | 15 RPM / 1,500 RPD | **$0.00** |
+| **Google Gemini 3 Family (3.8 Flash / 3.1 Flash Lite)** | Google AI Studio Free Tier | 15 RPM / 1,500 RPD | **$0.00** |
 | **Anthropic Claude 3.5** | **BUDGET-GATED ($0.00 Mode)** | Disabled until owner budget | **$0.00** |
 | **Deterministic Heuristic Engine** | In-Worker V8 Offline Engine | Unlimited execution | **$0.00** |
 | **SUBTOTAL AI INFERENCE COST** | — | — | **$0.00 USD** |

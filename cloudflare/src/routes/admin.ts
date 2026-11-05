@@ -122,6 +122,139 @@ adminRouter.post("/ai-control/test-connection", async (c) => {
   });
 });
 
+adminRouter.get("/ai-control/gemini-models", async (c) => {
+  const apiKey = c.env.GEMINI_API_KEY ? c.env.GEMINI_API_KEY.trim() : null;
+  if (!apiKey) {
+    return c.json({ error: "GEMINI_API_KEY missing in secrets." }, 400);
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`, {
+      signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+    });
+    clearTimeout(timeoutId);
+
+    const data: any = await res.json();
+    if (!res.ok) {
+      return c.json({ error: data, status: res.status }, res.status as any);
+    }
+
+    const modelNames = (data.models || []).map((m: any) => ({
+      name: m.name,
+      displayName: m.displayName,
+      supportedGenerationMethods: m.supportedGenerationMethods,
+    }));
+
+    return c.json({
+      success: true,
+      total_models: modelNames.length,
+      models: modelNames,
+    });
+  } catch (err: any) {
+    clearTimeout(timeoutId);
+    return c.json({ error_name: err.name, error_message: err.message }, 500);
+  }
+});
+
+adminRouter.get("/ai-control/gemini-live-test", async (c) => {
+  const apiKey = c.env.GEMINI_API_KEY ? c.env.GEMINI_API_KEY.trim() : null;
+  if (!apiKey) {
+    return c.json(
+      {
+        success: false,
+        error: "SECRET_MISSING: GEMINI_API_KEY is not bound or empty in Cloudflare Worker secrets.",
+      },
+      400
+    );
+  }
+
+  const model = c.req.query("model") || "gemini-3.8-flash";
+  const startTime = Date.now();
+  const baseUrl = c.env.GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta";
+  const url = `${baseUrl}/models/${model}:generateContent?key=${apiKey}`;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            role: "user",
+            parts: [
+              {
+                text: "Explain why lead qualification is critical for B2B SEO agencies in 2 concise sentences.",
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 250,
+        },
+      }),
+      signal: controller.signal,
+    });
+    clearTimeout(timer);
+
+    const latencyMs = Date.now() - startTime;
+    const rawText = await res.text();
+    let data: any;
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      data = { raw: rawText };
+    }
+
+    if (!res.ok) {
+      return c.json(
+        {
+          success: false,
+          http_status: res.status,
+          latency_ms: latencyMs,
+          model_attempted: model,
+          google_error: data,
+        },
+        res.status as any
+      );
+    }
+
+    const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const usageMetadata = data.usageMetadata || {};
+
+    return c.json({
+      success: true,
+      http_status: res.status,
+      latency_ms: latencyMs,
+      provider: "Google Gemini (Official Free Tier)",
+      model: model,
+      response_text: generatedText,
+      usage: usageMetadata,
+      free_tier_cost: "$0.00 USD",
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err: any) {
+    return c.json(
+      {
+        success: false,
+        error_name: err.name,
+        error_message: err.message,
+        latency_ms: Date.now() - startTime,
+      },
+      500
+    );
+  }
+});
+
 adminRouter.get("/seo/global", async (c) => {
   const conf = await c.env.DB.prepare("SELECT * FROM seo_global_configs LIMIT 1").first<any>();
   return c.json(conf || { site_name: "ProspectOS", meta_title: "ProspectOS - Agentic SEO Platform" });

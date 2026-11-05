@@ -1,5 +1,5 @@
 /**
- * ProspectOS Cloudflare Serverless - Unified AI Provider Router (Phase 6)
+ * ProspectOS Cloudflare Serverless - Unified AI Provider Router (Phase 6 Live)
  * Core Supported Providers:
  *   1. Primary: Google Gemini (gemini-3.8-flash) - Free Tier Only (1,500 RPD / 15 RPM)
  *   2. Secondary: Anthropic Claude (claude-3-5-haiku-20241022) - Strict Budget-Gated Mode ($0.00)
@@ -43,8 +43,9 @@ export class UnifiedAIProvider {
   async complete(options: AICompletionOptions): Promise<AICompletionResult> {
     const systemPrompt =
       options.systemPrompt ||
-      "You are ProspectOS AI, an expert agentic SEO and B2B prospect intelligence analyst. Provide concise, structured JSON output.";
+      "You are ProspectOS AI, an expert agentic SEO and B2B prospect intelligence analyst.";
     const preferred = options.preferredProvider || "gemini";
+    let lastGeminiError: string | null = null;
 
     // 1. PRIMARY: Google Gemini 3.8 Flash (Official Free Tier)
     if (preferred === "gemini" || !options.preferredProvider) {
@@ -52,12 +53,12 @@ export class UnifiedAIProvider {
         try {
           return await this.callGemini(options.prompt, systemPrompt, options);
         } catch (err: any) {
+          lastGeminiError = err.message;
           console.warn(`[ProspectOS AI] Gemini 3.8 Flash failed: ${err.message}. Cascading to secondary provider.`);
         }
       } else {
-        console.info(
-          "[ProspectOS AI] GEMINI_API_KEY is not configured in Cloudflare Worker secrets. Cascading to secondary/fallback."
-        );
+        lastGeminiError = "GEMINI_API_KEY is not configured in Cloudflare Worker secrets.";
+        console.info(`[ProspectOS AI] ${lastGeminiError}`);
       }
     }
 
@@ -99,14 +100,15 @@ export class UnifiedAIProvider {
       costUsd: 0.0,
       fallbackOccurred: true,
       quotaStatus: "LOCAL_OFFLINE_MODE",
-      statusNote:
-        "Deterministic rule-based response (NON-AI). External Google Gemini 3.8 Flash API key is pending in Cloudflare Worker secrets. Anthropic Claude remains budget-gated ($0.00).",
+      statusNote: `Deterministic rule-based response (NON-AI). External Google Gemini 3.8 Flash: ${lastGeminiError || "Offline"}. Anthropic Claude remains budget-gated ($0.00).`,
     };
   }
 
   /**
-   * Google Gemini 3.8 Flash API Client
-   * Fully compliant with Gemini 3 specification (REST generateContent)
+   * Google Gemini API Client
+   * Implements resilient Gemini 3 cascade:
+   * 1. gemini-3.8-flash (flagship flash model)
+   * 2. gemini-3.1-flash-lite (high-availability resilient model on demand spikes)
    */
   private async callGemini(
     prompt: string,
@@ -115,62 +117,84 @@ export class UnifiedAIProvider {
   ): Promise<AICompletionResult> {
     const apiKey = this.env.GEMINI_API_KEY!.trim();
     const baseUrl = this.env.GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta";
-    const model = "gemini-3.8-flash";
-    const url = `${baseUrl}/models/${model}:generateContent`;
+    const candidateModels = ["gemini-3.8-flash", "gemini-3.1-flash-lite"];
+    let lastError: Error | null = null;
 
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: prompt }],
+    for (const model of candidateModels) {
+      try {
+        const url = `${baseUrl}/models/${model}:generateContent?key=${apiKey}`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 15000);
+
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        ],
-        systemInstruction: {
-          parts: [{ text: systemPrompt }],
-        },
-        generationConfig: {
-          temperature: options.temperature ?? 0.4,
-          maxOutputTokens: options.maxTokens ?? 2048,
-          responseMimeType: "application/json",
-        },
-      }),
-    });
+          body: JSON.stringify({
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: prompt }],
+              },
+            ],
+            systemInstruction: {
+              parts: [{ text: systemPrompt }],
+            },
+            generationConfig: {
+              temperature: options.temperature ?? 0.4,
+              maxOutputTokens: options.maxTokens ?? 2048,
+            },
+          }),
+          signal: controller.signal,
+        });
+        clearTimeout(timer);
 
-    if (!res.ok) {
-      const errText = await res.text();
-      if (res.status === 429) {
-        throw new Error(
-          `Gemini 3.8 Flash free tier quota reached (15 RPM / 1,500 RPD). Preserving $0.00 cost limit: No paid overage triggered.`
-        );
+        if (!res.ok) {
+          const errText = await res.text();
+          // If Google returns 503 (high demand) or 404 (model unavailable), try next candidate
+          if (res.status === 503 || res.status === 404) {
+            console.warn(`[ProspectOS AI] Gemini model ${model} returned ${res.status}: ${errText}. Attempting fallback model.`);
+            lastError = new Error(`Gemini ${model} ${res.status}: ${errText}`);
+            continue;
+          }
+          if (res.status === 429) {
+            throw new Error(
+              `Gemini ${model} free tier rate limit reached (15 RPM / 1,500 RPD). Preserving $0.00 cost limit: No paid overage triggered.`
+            );
+          }
+          throw new Error(`Gemini HTTP ${res.status}: ${errText}`);
+        }
+
+        const data: any = await res.json();
+        const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+        const meta = data.usageMetadata || { promptTokenCount: 0, candidatesTokenCount: 0, totalTokenCount: 0 };
+
+        return {
+          content,
+          provider: "gemini",
+          model: model,
+          isAiGenerated: true,
+          tokensUsed: {
+            prompt: meta.promptTokenCount || 0,
+            completion: meta.candidatesTokenCount || 0,
+            total: meta.totalTokenCount || 0,
+          },
+          costUsd: 0.0, // Google AI Studio Free Tier allowance
+          fallbackOccurred: false,
+          quotaStatus: "FREE_TIER_ACTIVE",
+          statusNote: `Live inference successfully generated via Google Gemini (${model}) Free Tier.`,
+        };
+      } catch (err: any) {
+        lastError = err;
+        if (err.message?.includes("free tier rate limit")) {
+          throw err;
+        }
+        console.warn(`[ProspectOS AI] Failed attempt with ${model}: ${err.message}`);
       }
-      throw new Error(`Gemini HTTP ${res.status}: ${errText}`);
     }
 
-    const data: any = await res.json();
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-    const meta = data.usageMetadata || { promptTokenCount: 0, candidatesTokenCount: 0, totalTokenCount: 0 };
-
-    return {
-      content,
-      provider: "gemini",
-      model: model,
-      isAiGenerated: true,
-      tokensUsed: {
-        prompt: meta.promptTokenCount || 0,
-        completion: meta.candidatesTokenCount || 0,
-        total: meta.totalTokenCount || 0,
-      },
-      costUsd: 0.0, // Google AI Studio Free Tier allowance
-      fallbackOccurred: false,
-      quotaStatus: "FREE_TIER_ACTIVE",
-      statusNote: "Live inference successfully generated via Google Gemini 3.8 Flash Free Tier.",
-    };
+    throw lastError || new Error("All Gemini candidate models failed to generate content.");
   }
 
   /**
@@ -199,6 +223,7 @@ export class UnifiedAIProvider {
         system: systemPrompt,
         messages: [{ role: "user", content: prompt }],
       }),
+      signal: AbortSignal.timeout(12000),
     });
 
     if (!res.ok) {

@@ -45,3 +45,4 @@ jobs:
           workingDirectory: "cloudflare"
           wranglerVersion: "4.157.0"
         continue-on-error: true
+

@@ -29,3 +29,4 @@ The repository includes automated CI running on `ubuntu-latest`:
 
 - All `.env`, `*.dump`, `*.d1`, and `.wrangler` credentials are systematically excluded via `.gitignore`.
 - Secrets must be injected exclusively via Cloudflare Worker Secrets (`wrangler secret put`).
+

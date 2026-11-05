@@ -58,3 +58,4 @@
    - `GET /health/database`: Verifies D1 query latency and connection status.
 3. **KV Revocation Cleanup**:
    - Every revoked token in KV has an explicit TTL equal to JWT expiration (`expirationTtl: 86400`), automatically reclaiming KV key space after 24 hours.
+

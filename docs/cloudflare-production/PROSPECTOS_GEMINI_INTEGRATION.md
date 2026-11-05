@@ -123,3 +123,4 @@ curl -X POST "https://prospectos-serverless.smagencywire.workers.dev/api/assista
 
 - **Result**: **PASS**
 - **Monthly Cost**: **$0.00 USD**.
+

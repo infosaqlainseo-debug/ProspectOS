@@ -100,3 +100,4 @@ export async function handleLeadExport(c: Context<{ Bindings: Env }>) {
 - **Configuration Validated**: `cloudflare/wrangler.jsonc` defines optional R2 binding.
 - **Export Endpoint Verified**: In-memory streaming tested and verified operational.
 - **Monthly Cost**: **$0.00 USD** within 10GB free allowance.
+

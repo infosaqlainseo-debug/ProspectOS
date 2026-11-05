@@ -105,3 +105,4 @@ If the owner decides to enable Anthropic Claude with paid credits:
 - **Budget Gate Verified**: `callAnthropicClaude` raises protective error when budget-gated.
 - **Failover to Gemini**: Successfully verified that disabled Anthropic requests instantly fail over to Google Gemini / heuristic fallback with 0ms interruption.
 - **Cost**: **$0.00 USD**.
+

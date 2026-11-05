@@ -32,40 +32,53 @@ crmRouter.get("/leads", async (c) => {
 });
 
 crmRouter.post("/leads", async (c) => {
-  const body = await c.req.json().catch(() => ({}));
-  const id = crypto.randomUUID();
-  const now = new Date().toISOString();
-  const name = body.company_name || body.name || "Untitled Prospect";
-  const website = body.website_url || body.website || "";
+  try {
+    const body = await c.req.json().catch(() => ({}));
+    const id = crypto.randomUUID();
+    const now = new Date().toISOString();
+    const name = body.company_name || body.name || "Untitled Prospect";
+    const website = body.website_url || body.website || "https://example.com";
+    const domain = body.canonical_domain || (typeof website === "string" ? website.replace(/^https?:\/\//, "").split("/")[0] : "example.com");
 
-  await c.env.DB.prepare(
-    `INSERT INTO companies (
-      id, company_name, website_url, canonical_domain, country, city, industry, 
-      sales_stage, stage_updated_at, lead_priority, gdrive_sync_status,
-      company_status, first_discovered_at, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-  )
-    .bind(
-      id,
-      name,
-      website,
-      body.canonical_domain || (website ? website.replace(/^https?:\/\//, "").split("/")[0] : "example.com"),
-      body.country || "Global",
-      body.city || "",
-      body.industry || "General B2B",
-      body.sales_stage || body.company_status || "NEW",
-      now,
-      body.lead_priority || "MEDIUM",
-      "NOT_SYNCED",
-      body.company_status || "NEW",
-      now,
-      now,
-      now
+    await c.env.DB.prepare(
+      `INSERT INTO companies (
+        id, company_name, website_url, canonical_domain, country, city, industry, 
+        sales_stage, stage_updated_at, lead_priority, gdrive_sync_status,
+        company_status, first_discovered_at, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(canonical_domain) DO UPDATE SET
+        company_name = excluded.company_name,
+        website_url = excluded.website_url,
+        sales_stage = excluded.sales_stage,
+        stage_updated_at = excluded.stage_updated_at,
+        lead_priority = excluded.lead_priority,
+        company_status = excluded.company_status,
+        updated_at = excluded.updated_at`
     )
-    .run();
+      .bind(
+        id,
+        name,
+        website,
+        domain,
+        body.country || "Global",
+        body.city || "",
+        body.industry || "General B2B",
+        body.sales_stage || body.company_status || "NEW",
+        now,
+        body.lead_priority || "MEDIUM",
+        "NOT_SYNCED",
+        body.company_status || body.sales_stage || "NEW",
+        now,
+        now,
+        now
+      )
+      .run();
 
-  const created = await c.env.DB.prepare("SELECT * FROM companies WHERE id = ?").bind(id).first<any>();
-  return c.json(created, 201);
+    const created = await c.env.DB.prepare("SELECT * FROM companies WHERE canonical_domain = ?").bind(domain).first<any>();
+    return c.json(created, 201);
+  } catch (err: any) {
+    return c.json({ detail: err.message, stack: err.stack }, 500);
+  }
 });
 
 crmRouter.get("/leads/:id", async (c) => {

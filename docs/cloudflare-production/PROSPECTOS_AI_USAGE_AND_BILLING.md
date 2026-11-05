@@ -64,3 +64,4 @@ If the platform experiences hypergrowth beyond free-tier capacity:
 1. **Cloudflare Workers Paid Plan**: $5/month for 10 million requests (if exceeding 100k requests/day).
 2. **Gemini Pay-As-You-Go**: $0.075 per 1 million input tokens on Gemini 1.5 Flash (extremely economical).
 3. **Anthropic Pay-As-You-Go**: Activate Claude 3.5 Haiku ($0.25 / 1M tokens) for premium agency clients who pay subscription fees.
+

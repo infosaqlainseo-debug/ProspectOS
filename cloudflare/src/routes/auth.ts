@@ -4,11 +4,130 @@
 
 import { Hono } from "hono";
 import { Env, UserPayload } from "../types/env";
-import { verifyPassword } from "../auth/password";
+import { verifyPassword, hashPassword } from "../auth/password";
 import { createAccessToken } from "../auth/jwt";
 import { authMiddleware } from "../auth/middleware";
 
 export const authRouter = new Hono<{ Bindings: Env; Variables: { user: UserPayload } }>();
+
+authRouter.post("/register", async (c) => {
+  const body = await c.req.json().catch(() => ({}));
+  const email = (body.email || "").trim().toLowerCase();
+  const password = body.password || "";
+  const fullName = (body.full_name || body.fullName || "").trim();
+  const companyName = (body.company_name || body.companyName || "").trim();
+
+  if (!email || !password || !fullName) {
+    return c.json({ detail: "Email, password, and full name are required." }, 400);
+  }
+
+  if (password.length < 8) {
+    return c.json({ detail: "Password must be at least 8 characters long." }, 400);
+  }
+
+  // Check if user already exists
+  const existing = await c.env.DB.prepare(
+    "SELECT id FROM portal_users WHERE LOWER(email) = ? LIMIT 1"
+  )
+    .bind(email)
+    .first<any>();
+
+  if (existing) {
+    return c.json({ detail: "A user with this email address already exists." }, 409);
+  }
+
+  // Optional: create company if specified
+  let companyId: string | null = null;
+  const nowStr = new Date().toISOString();
+  if (companyName) {
+    companyId = crypto.randomUUID();
+    const domain = email.includes("@") ? email.split("@")[1] : "example.com";
+    try {
+      await c.env.DB.prepare(
+        `INSERT INTO companies (
+          id, company_name, canonical_domain, website_url, country, city, industry, 
+          sales_stage, stage_updated_at, lead_priority, gdrive_sync_status,
+          company_status, first_discovered_at, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      )
+        .bind(
+          companyId,
+          companyName,
+          domain,
+          `https://${domain}`,
+          "Global",
+          "",
+          "B2B",
+          "NEW",
+          nowStr,
+          "MEDIUM",
+          "NOT_SYNCED",
+          "NEW",
+          nowStr,
+          nowStr,
+          nowStr
+        )
+        .run();
+    } catch {
+      companyId = null;
+    }
+  }
+
+  // Hash password with WebCrypto PBKDF2
+  const hashedPassword = await hashPassword(password);
+  const userId = crypto.randomUUID();
+
+  await c.env.DB.prepare(
+    "INSERT INTO portal_users (id, email, full_name, role, hashed_password, is_active, company_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  )
+    .bind(userId, email, fullName, "STANDARD_USER", hashedPassword, 1, companyId, nowStr, nowStr)
+    .run();
+
+  // Audit log
+  await c.env.DB.prepare(
+    "INSERT INTO portal_audit_logs (id, user_id, company_id, action, resource_type, resource_id, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  )
+    .bind(
+      crypto.randomUUID(),
+      userId,
+      companyId,
+      "USER_REGISTER_SUCCESS",
+      "PORTAL_USER",
+      userId,
+      JSON.stringify({ email, fullName, companyName }),
+      c.req.header("cf-connecting-ip") || "127.0.0.1",
+      nowStr
+    )
+    .run()
+    .catch(() => {});
+
+  const secret = c.env.JWT_SECRET || "prospectos-cf-zero-cost-master-secret-2026";
+  const token = await createAccessToken(
+    {
+      sub: userId,
+      email: email,
+      role: "STANDARD_USER",
+      company_id: companyId,
+    },
+    secret
+  );
+
+  return c.json(
+    {
+      message: "User registered successfully.",
+      access_token: token,
+      token_type: "bearer",
+      user: {
+        id: userId,
+        email: email,
+        full_name: fullName,
+        role: "STANDARD_USER",
+        company_id: companyId,
+      },
+    },
+    201
+  );
+});
 
 authRouter.post("/login", async (c) => {
   const body = await c.req.json().catch(() => ({}));
@@ -48,11 +167,12 @@ authRouter.post("/login", async (c) => {
   // Create audit log entry
   const logId = crypto.randomUUID();
   await c.env.DB.prepare(
-    "INSERT INTO portal_audit_logs (id, user_id, action, resource_type, resource_id, details, ip_address, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    "INSERT INTO portal_audit_logs (id, user_id, company_id, action, resource_type, resource_id, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
   )
     .bind(
       logId,
       user.id,
+      user.company_id || null,
       "USER_LOGIN_SUCCESS",
       "PORTAL_USER",
       user.id,

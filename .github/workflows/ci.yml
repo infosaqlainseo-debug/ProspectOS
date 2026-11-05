@@ -6,10 +6,12 @@ on:
       - main
       - development
       - cloudflare-zero-cost-migration
+      - cloudflare-anthropic-gemini-migration
   pull_request:
     branches:
       - main
       - development
+      - cloudflare-anthropic-gemini-migration
 
 jobs:
   validate:

@@ -85,3 +85,4 @@ print(f'Successfully synced {len(data)} leads back to PostgreSQL.')
 ## 4. ROLLBACK DRILL CONCLUSION
 
 Because the serverless migration is 100% additive and non-destructive to the original infrastructure, the rollback window is instantaneous (< 30 seconds to run `docker-compose up -d`) with zero potential for data loss.
+

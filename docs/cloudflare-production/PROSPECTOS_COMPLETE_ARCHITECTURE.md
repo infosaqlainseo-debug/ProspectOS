@@ -46,3 +46,4 @@
 3. **Database**: Cloudflare D1 SQLite database `prospectos-production-d1` (`62d68ef1-ed9d-47bf-b90a-8a26f2cfabe0`).
 4. **Cache & Tokens**: Cloudflare KV `PROSPECTOS_KV` (`bb54a9e9dfdb4c1b979a9633c9256817`) for instant token revocation.
 5. **AI Routing**: Multi-provider pipeline routing to Anthropic Claude (when spending budget is approved) and Google Gemini (free tier) with fallback to local heuristic intelligence.
+

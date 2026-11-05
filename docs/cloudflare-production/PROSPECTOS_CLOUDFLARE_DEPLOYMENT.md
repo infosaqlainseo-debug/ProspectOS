@@ -31,3 +31,4 @@ Previously, requests to `https://prospectos-serverless.grokxseo.workers.dev/` re
 | `/portal/`| Organization Portal | **200 OK** | `text/html` |
 | `/health` | Serverless Gateway Health Check | **200 OK** | `application/json` |
 | `/health/database` | Cloudflare D1 Pulse Check | **200 OK** | `application/json` |
+

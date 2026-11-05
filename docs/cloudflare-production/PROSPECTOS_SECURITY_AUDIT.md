@@ -91,3 +91,4 @@ curl -i -X GET "https://prospectos-serverless.smagencywire.workers.dev/admin/ove
    - JWT tokens include a unique JTI (JWT ID).
    - When a user logs out or is suspended by Super Admin, the JTI is written to Cloudflare KV (`PROSPECTOS_KV`) with a TTL matching token expiry.
    - The auth middleware checks KV on every protected request; revoked tokens are instantly rejected with HTTP 401.
+

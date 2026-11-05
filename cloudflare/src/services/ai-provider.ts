@@ -156,16 +156,11 @@ export class UnifiedAIProvider {
 
         if (!res.ok) {
           const errText = await res.text();
-          // If Google returns 503 (high demand) or 404 (model unavailable), try next candidate
-          if (res.status === 503 || res.status === 404) {
+          // If Google returns 503 (high demand), 404 (model unavailable), or 429 (per-model rate limit), try next candidate
+          if (res.status === 503 || res.status === 404 || res.status === 429) {
             console.warn(`[ProspectOS AI] Gemini model ${model} returned ${res.status}: ${errText}. Attempting fallback model.`);
             lastError = new Error(`Gemini ${model} ${res.status}: ${errText}`);
             continue;
-          }
-          if (res.status === 429) {
-            throw new Error(
-              `Gemini ${model} free tier rate limit reached (15 RPM / 1,500 RPD). Preserving $0.00 cost limit: No paid overage triggered.`
-            );
           }
           throw new Error(`Gemini HTTP ${res.status}: ${errText}`);
         }

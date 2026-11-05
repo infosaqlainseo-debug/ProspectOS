@@ -107,6 +107,14 @@ app.route("/crm", crmRouter);
 app.route("/companies", companiesRouter);
 app.route("/api/storage", storageRouter);
 
+// Fallback: If not matched by any API route, serve static frontend assets
+app.notFound(async (c) => {
+  if (c.env.ASSETS) {
+    return c.env.ASSETS.fetch(c.req.raw);
+  }
+  return c.text("Not Found", 404);
+});
+
 // 6. Export Fetch Handler and Cloudflare Queue Consumer
 export default {
   fetch: app.fetch,

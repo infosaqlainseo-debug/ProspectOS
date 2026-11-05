@@ -8,6 +8,14 @@ import { authMiddleware } from "../auth/middleware";
 
 export const companiesRouter = new Hono<{ Bindings: Env; Variables: { user: UserPayload } }>();
 
+// If browser is directly navigating to /companies page without Authorization header, serve frontend assets
+companiesRouter.use("*", async (c, next) => {
+  if (c.req.header("accept")?.includes("text/html") && !c.req.header("authorization") && c.env.ASSETS) {
+    return c.env.ASSETS.fetch(c.req.raw);
+  }
+  await next();
+});
+
 companiesRouter.use("*", authMiddleware);
 
 companiesRouter.get("/", async (c) => {

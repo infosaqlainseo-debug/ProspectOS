@@ -9,7 +9,15 @@ import { UnifiedAIProvider } from "../services/ai-provider";
 
 export const adminRouter = new Hono<{ Bindings: Env; Variables: { user: UserPayload } }>();
 
-// All admin routes strictly require SUPER_ADMIN role
+// If browser is directly navigating to an admin page without Authorization header, serve frontend assets
+adminRouter.use("*", async (c, next) => {
+  if (c.req.header("accept")?.includes("text/html") && !c.req.header("authorization") && c.env.ASSETS) {
+    return c.env.ASSETS.fetch(c.req.raw);
+  }
+  await next();
+});
+
+// All admin API routes strictly require SUPER_ADMIN role
 adminRouter.use("*", authMiddleware);
 adminRouter.use("*", requireRole(["SUPER_ADMIN"]));
 
@@ -51,7 +59,7 @@ adminRouter.get("/users", async (c) => {
 });
 
 adminRouter.get("/roles", async (c) => {
-  const roles = await c.env.DB.prepare("SELECT * FROM role_permissions ORDER BY role").all<any>();
+  const roles = await c.env.DB.prepare("SELECT * FROM role_permissions ORDER BY role_name").all<any>();
   return c.json(roles.results || []);
 });
 

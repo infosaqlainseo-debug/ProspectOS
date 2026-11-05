@@ -162,9 +162,21 @@ crmRouter.post("/segments", async (c) => {
   const now = new Date().toISOString();
 
   await c.env.DB.prepare(
-    "INSERT INTO crm_lead_segments (id, name, description, created_at, updated_at) VALUES (?, ?, ?, ?, ?)"
+    `INSERT INTO crm_lead_segments (
+      id, name, description, filter_criteria, is_dynamic, color, member_count, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
-    .bind(id, body.name || "Custom Segment", body.description || "", now, now)
+    .bind(
+      id,
+      body.name || "Custom Segment",
+      body.description || "",
+      JSON.stringify(body.filter_criteria || body.filters || {}),
+      body.is_dynamic !== undefined ? (body.is_dynamic ? 1 : 0) : 1,
+      body.color || "blue",
+      0,
+      now,
+      now
+    )
     .run();
 
   const created = await c.env.DB.prepare("SELECT * FROM crm_lead_segments WHERE id = ?").bind(id).first<any>();

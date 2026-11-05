@@ -19,3 +19,4 @@ export interface UserPayload {
   company_id?: string | null;
   exp?: number;
 }
+

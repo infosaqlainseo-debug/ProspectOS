@@ -48,3 +48,4 @@ export function requireRole(allowedRoles: string[]) {
     await next();
   };
 }
+

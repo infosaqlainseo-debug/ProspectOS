@@ -33,3 +33,4 @@ companiesRouter.get("/:id", async (c) => {
   if (!company) return c.json({ detail: "Company not found." }, 404);
   return c.json(company);
 });
+

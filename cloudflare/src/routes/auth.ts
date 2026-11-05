@@ -112,3 +112,4 @@ authRouter.post("/logout", authMiddleware, async (c) => {
 
   return c.json({ message: "Successfully logged out." });
 });
+

@@ -135,15 +135,23 @@ A complete migration drill was executed against an isolated SQLite database (`ba
 
 ## 6. API DEPLOYMENT RESULTS
 
-The Cloudflare Worker API was compiled with TypeScript (`tsc --noEmit` exited code 0) and tested live under local Wrangler simulation (`http://localhost:8787`):
-- `GET /health`: **200 OK** (`{"status":"ok","architecture":"Cloudflare Serverless","monthly_operating_cost":"$0.00 USD"}`)
-- `GET /health/database`: **200 OK** (`{"status":"ok","database":"connected","engine":"Cloudflare D1 (SQLite 3)"}`)
-- `GET /robots.txt`: **200 OK** (Generated dynamically)
-- `GET /sitemap.xml`: **200 OK** (Generated dynamically from D1 `seo_public_pages`)
-- `GET /admin/overview` (Unauthenticated): **401 Unauthorized** (`{"detail":"Authentication credentials were not provided."}`)
-- `GET /admin/overview` (`admin@prospectos.com`, `SUPER_ADMIN`): **200 OK**
-- `GET /admin/overview` (`lead.scout@prospectos.com`, `MANAGER`): **403 Forbidden** (`{"detail":"Access denied. Required role in ['SUPER_ADMIN'], your role is 'MANAGER'."}`)
-- `GET /crm/pipeline/board` (`lead.scout@prospectos.com`): **200 OK**
+The Cloudflare Worker API was compiled with TypeScript and deployed live to Cloudflare Edge:
+- **Live Public Staging URL**: [`https://prospectos-serverless.grokxseo.workers.dev`](https://prospectos-serverless.grokxseo.workers.dev)
+- **Live Remote D1 Database**: `prospectos-staging-d1` (`7155ca1d-72c7-4097-a361-7f1ca8e57eb6`)
+- **Live KV Binding**: `RATE_LIMIT` (`a737a3e399514847853b0afbdc70d9b6`)
+- **Version ID**: `662614d4-1a31-4dca-9dca-2b55e384a1ea`
+
+### Live Edge Empirical Verification Log:
+1. `GET /health`: **200 OK** (`{"status":"ok","architecture":"Cloudflare Serverless (Workers + D1 + R2)","monthly_operating_cost":"$0.00 USD"}`)
+2. `GET /health/database`: **200 OK** (`{"status":"ok","database":"connected","engine":"Cloudflare D1 (SQLite 3)"}`)
+3. `GET /admin/overview` (Unauthenticated): **401 Unauthorized** (`{"detail":"Authentication credentials were not provided."}`)
+4. `GET /admin/overview` (`lead.scout@prospectos.com`, `MANAGER`): **403 Forbidden** (`{"detail":"Access denied. Required role in ['SUPER_ADMIN'], your role is 'MANAGER'."}`)
+5. `GET /admin/overview` (`admin@prospectos.com`, `SUPER_ADMIN`): **200 OK** (`total_users: 3`, `operating_cost_monthly: "$0.00 USD"`)
+6. `POST /api/scraper/tasks`: **201 Created** (Task `02f780ee-8e24-42f0-8888-11f675578998` created in remote D1)
+7. `POST /api/scraper/tasks/:id/run`: **200 OK** (Scraped `https://example.com` in 0.10s, extracted 1 valid lead)
+8. `POST /crm/import-from-scraper`: **200 OK** (Converted extracted record into CRM lead)
+9. `GET /crm/pipeline/board`: **200 OK** (Reflects live pipeline lead)
+10. `POST /crm/assistant/chat`: **200 OK** (Returned sales intelligence analysis, `cost_usd: 0`)
 
 ---
 

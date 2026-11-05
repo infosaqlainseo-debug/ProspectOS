@@ -7,20 +7,14 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "prospectos-d1",
-      "database_id": "00000000-0000-0000-0000-000000000001"
+      "database_name": "prospectos-staging-d1",
+      "database_id": "7155ca1d-72c7-4097-a361-7f1ca8e57eb6"
     }
   ],
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "00000000000000000000000000000002"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "R2",
-      "bucket_name": "prospectos-storage"
+      "id": "a737a3e399514847853b0afbdc70d9b6"
     }
   ],
   "ai": {
@@ -34,3 +28,4 @@
     "JWT_SECRET": "prospectos-cf-zero-cost-master-secret-2026"
   }
 }
+

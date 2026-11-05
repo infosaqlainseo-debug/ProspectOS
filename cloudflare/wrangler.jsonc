@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "prospectos-serverless",
+  "main": "src/index.ts",
+  "compatibility_date": "2024-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "prospectos-d1",
+      "database_id": "00000000-0000-0000-0000-000000000001"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "00000000000000000000000000000002"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "R2",
+      "bucket_name": "prospectos-storage"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "TARGET_MONTHLY_COST": "$0.00 USD",
+    "GROQ_API_URL": "https://api.groq.com/openai/v1/chat/completions",
+    "GEMINI_API_URL": "https://generativelanguage.googleapis.com/v1beta",
+    "JWT_SECRET": "prospectos-cf-zero-cost-master-secret-2026"
+  }
+}

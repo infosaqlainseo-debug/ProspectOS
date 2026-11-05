@@ -29,6 +29,17 @@ backups/ssl/
 *.pem
 *.key
 *.crt
+.wrangler/
+.cloudflare/
+*.d1
+credentials*.json
+wrangler.secrets.*
+exports/*.csv
+exports/*.xlsx
+exports/*.json
+backend/exports/*.csv
+backend/exports/*.xlsx
+backend/exports/*.json
 
 # Process IDs & Sockets
 *.pid

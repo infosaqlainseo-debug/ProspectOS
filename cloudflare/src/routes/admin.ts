@@ -173,12 +173,24 @@ adminRouter.get("/ai-control/gemini-live-test", async (c) => {
   }
 
   const model = c.req.query("model") || "gemini-3.8-flash";
+  const thinkingParam = c.req.query("thinking") || "low";
   const startTime = Date.now();
   const baseUrl = c.env.GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta";
   const url = `${baseUrl}/models/${model}:generateContent?key=${apiKey}`;
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 20000);
+  const timer = setTimeout(() => controller.abort(), 35000);
+
+  const generationConfig: any = {
+    temperature: 0.2,
+    maxOutputTokens: 250,
+  };
+
+  if (thinkingParam && thinkingParam !== "none") {
+    generationConfig.thinkingConfig = {
+      thinkingLevel: thinkingParam,
+    };
+  }
 
   try {
     const res = await fetch(url, {
@@ -197,10 +209,7 @@ adminRouter.get("/ai-control/gemini-live-test", async (c) => {
             ],
           },
         ],
-        generationConfig: {
-          temperature: 0.2,
-          maxOutputTokens: 250,
-        },
+        generationConfig,
       }),
       signal: controller.signal,
     });

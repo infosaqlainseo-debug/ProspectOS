@@ -1,33 +1,58 @@
 # PROSPECTOS — GOOGLE GEMINI 3 INTEGRATION SPECIFICATION
 
 **Target Platform**: Cloudflare Serverless SaaS  
-**Primary AI Inference Engine**: **Google Gemini 3 Family** (`gemini-3.8-flash` Primary / `gemini-3.1-flash-lite` High-Availability Fallback)  
+**Primary AI Inference Engine**: **Google Gemini 3.8 Flash** (`gemini-3.8-flash`)  
+**Secondary Supported Fallback**: **Google Gemini 3.5 Flash Lite** (`gemini-3.5-flash-lite`)  
+**Tertiary Edge Fallback**: **Google Gemini 3.1 Flash Lite** (`gemini-3.1-flash-lite`)  
 **Operating Allowance**: **Google AI Studio Free Tier (15 RPM / 1,500 RPD at $0.00 USD)**  
-**Version**: 3.1 (Gemini 3 Architecture Upgrade with Multi-Model Edge Resilience Cascade)  
+**Version**: 3.2 (Gemini 3 Architecture with Active Fallback Strategy & Lifecycle Management)  
 
 ---
 
-## 1. MODEL UPGRADE & ARCHITECTURAL OVERVIEW
+## 1. MODEL ARCHITECTURE & MULTI-TIER CASCADE OVERVIEW
 
-Following Google's deprecation and shutdown of legacy Gemini 1.5 endpoints, ProspectOS has upgraded its primary AI inference provider to the current Google Gemini 3 series:
-- **Flagship Model**: **Gemini 3.8 Flash** (`gemini-3.8-flash`) — Advanced reasoning, complex sales analysis.
-- **Resilient Fallback Model**: **Gemini 3.1 Flash Lite** (`gemini-3.1-flash-lite`) — Ultra-fast, highly responsive fallback when 3.8 experiences temporary Google capacity spikes (HTTP 503).
+Following Google's deprecation and shutdown of legacy Gemini 1.5 endpoints, ProspectOS has deployed a 3-tier Gemini 3 architecture designed for zero cost ($0.00) and maximum uptime:
 
-### Core Responsibilities in ProspectOS:
-1. **Automated SEO Audit Summaries**: Analyzing raw crawler metrics (HTTP status codes, title tags, schema.org markup, responsive meta tags, backlink indicators) into client-facing executive summaries.
-2. **ICP Lead Qualification & Scoring**: Evaluating prospective business domains against target ideal customer profiles (1-100 numerical score with rationale).
-3. **Conversational Intelligence Assistant**: Answering prospect analysis queries in the `/crm/pipeline` and `/portal` interfaces.
+1. **Primary Model**: **Gemini 3.8 Flash** (`gemini-3.8-flash`)  
+   - Flagship speed model of the Gemini 3 family.
+   - Configured with `thinkingConfig: { thinkingLevel: "low" }` to prevent latency bottlenecks and eliminate reasoning token cost.
+   - Tested Latency: **2,100 ms**.
+2. **Secondary Fallback Model**: **Gemini 3.5 Flash Lite** (`gemini-3.5-flash-lite`)  
+   - **Actively maintained and production-recommended by Google AI Studio**.
+   - **No scheduled shutdown or retirement date announced**.
+   - Ultra-fast latency: **1,301 ms**.
+   - Zero thoughts token overhead; ideal long-term fallback when 3.8 experiences Google server demand spikes.
+3. **Tertiary Fallback Model**: **Gemini 3.1 Flash Lite** (`gemini-3.1-flash-lite`)  
+   - High-throughput low-latency fallback model.
+   - Note: Scheduled retirement date of **May 7, 2027**.
+   - Provides an extra resilience layer across 2026/2027.
 
 ---
 
-## 2. GOOGLE AI STUDIO FREE-TIER SPECIFICATIONS
+## 2. SECONDARY MODEL LIFECYCLE EVALUATION & SELECTION DECISION
+
+| Model Candidate | Current Google Status | Scheduled Retirement | Avg Latency | Thoughts Tokens | Decision & Architectural Role |
+| :--- | :--- | :---: | :---: | :---: | :--- |
+| **`gemini-3.8-flash`** | Active (Flagship Speed Tier) | None | 2,100 ms | 0 (in `low` mode) | **PRIMARY INFERENCE MODEL** |
+| **`gemini-3.5-flash-lite`** | Active (Google Recommended) | **None Announced** | **1,301 ms** | **0** | **APPROVED SECONDARY FALLBACK** |
+| **`gemini-3.1-flash-lite`** | Active (Legacy Flash Lite) | **May 7, 2027** | 1,042 ms | 0 | **TERTIARY BUFFER (2026-2027)** |
+| **`gemini-3.5-flash`** | Deprecated | Silent Reroute | 2,819 ms | 239 | Rejected (Silently reroutes to 3.6) |
+| **`gemini-2.5-flash`** | Deprecated | Blocked for New Users | N/A | N/A | Rejected (Returns HTTP 404) |
+
+### Decision Summary:
+`gemini-3.5-flash-lite` has been selected and approved as the primary secondary fallback. It is actively maintained in Google AI Studio, has no scheduled retirement date, and executes in ~1.3 seconds with 0 thoughts tokens overhead. `gemini-3.1-flash-lite` is retained as a tertiary safety buffer until its May 7, 2027 deprecation date.
+
+---
+
+## 3. GOOGLE AI STUDIO FREE-TIER SPECIFICATIONS
 
 ProspectOS operates strictly within Google AI Studio's perpetual free allowances:
 
 | Metric | Free Tier Allocation | System Enforcement |
 | :--- | :--- | :--- |
 | **Primary Model** | `gemini-3.8-flash` | Attempted first in `UnifiedAIProvider` |
-| **Resilient Cascade Model** | `gemini-3.1-flash-lite` | Triggered automatically on HTTP 503 / 404 |
+| **Secondary Model** | `gemini-3.5-flash-lite` | Triggered automatically on HTTP 503 / 404 |
+| **Tertiary Model** | `gemini-3.1-flash-lite` | Failsafe buffer before offline engine |
 | **Requests Per Minute (RPM)** | 15 RPM | Edge rate-limiter prevents burst overages |
 | **Requests Per Day (RPD)** | 1,500 Requests / Day | Daily counter in Cloudflare D1 |
 | **Tokens Per Minute (TPM)** | 1,000,000 TPM | Request truncation guardrails |
@@ -39,7 +64,7 @@ ProspectOS operates strictly within Google AI Studio's perpetual free allowances
 
 ---
 
-## 3. GEMINI 3 REST API SPECIFICATION
+## 4. GEMINI 3 REST API SPECIFICATION
 
 Implemented in `cloudflare/src/services/ai-provider.ts`:
 
@@ -67,7 +92,10 @@ Content-Type: application/json
   },
   "generationConfig": {
     "temperature": 0.4,
-    "maxOutputTokens": 2048
+    "maxOutputTokens": 2048,
+    "thinkingConfig": {
+      "thinkingLevel": "low"
+    }
   }
 }
 ```

@@ -1,9 +1,10 @@
 /**
  * ProspectOS Cloudflare Serverless - Unified AI Provider Router (Phase 6 Live)
  * Core Supported Providers:
- *   1. Primary: Google Gemini (gemini-3.8-flash) - Free Tier Only (1,500 RPD / 15 RPM)
- *   2. Secondary: Anthropic Claude (claude-3-5-haiku-20241022) - Strict Budget-Gated Mode ($0.00)
- *   3. Fallback: Deterministic Rule-Based Heuristic Engine (Explicitly Labeled Non-AI)
+ *   1. Primary: Google Gemini 3.8 Flash (gemini-3.8-flash) - Flagship Speed Model (Free Tier: 1,500 RPD / 15 RPM)
+ *   2. Secondary: Google Gemini 3.5 Flash Lite (gemini-3.5-flash-lite) - Actively Maintained Fallback (No Scheduled Deprecation)
+ *   3. Budget-Gated: Anthropic Claude (claude-3-5-haiku-20241022) - Strict Zero-Cost Mode ($0.00)
+ *   4. Deterministic Fallback: Offline Rule-Based Engine (Strictly Labeled NON-AI)
  * Enforces Zero-Cost Safeguards & Transparent Attribution
  */
 
@@ -107,8 +108,8 @@ export class UnifiedAIProvider {
   /**
    * Google Gemini API Client
    * Implements resilient Gemini 3 cascade:
-   * 1. gemini-3.8-flash (flagship flash model)
-   * 2. gemini-3.1-flash-lite (high-availability resilient model on demand spikes)
+   * 1. Primary: gemini-3.8-flash (flagship speed model)
+   * 2. Secondary: gemini-3.5-flash-lite (actively maintained, production-grade fallback with no scheduled shutdown)
    */
   private async callGemini(
     prompt: string,
@@ -117,14 +118,14 @@ export class UnifiedAIProvider {
   ): Promise<AICompletionResult> {
     const apiKey = this.env.GEMINI_API_KEY!.trim();
     const baseUrl = this.env.GEMINI_API_URL || "https://generativelanguage.googleapis.com/v1beta";
-    const candidateModels = ["gemini-3.8-flash", "gemini-3.1-flash-lite"];
+    const candidateModels = ["gemini-3.8-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite"];
     let lastError: Error | null = null;
 
     for (const model of candidateModels) {
       try {
         const url = `${baseUrl}/models/${model}:generateContent?key=${apiKey}`;
         const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), 15000);
+        const timer = setTimeout(() => controller.abort(), 25000);
 
         const res = await fetch(url, {
           method: "POST",
@@ -144,6 +145,9 @@ export class UnifiedAIProvider {
             generationConfig: {
               temperature: options.temperature ?? 0.4,
               maxOutputTokens: options.maxTokens ?? 2048,
+              thinkingConfig: {
+                thinkingLevel: "low",
+              },
             },
           }),
           signal: controller.signal,
